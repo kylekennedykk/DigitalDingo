@@ -4,6 +4,7 @@ import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
 import { AIChatBox } from '@/components/AIChatBox'
 import { AuthProvider } from '@/lib/contexts/AuthContext'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 const inter = Inter({ 
   subsets: ['latin'], 
