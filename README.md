@@ -1,15 +1,60 @@
-# Ansh & Riley Full-Stack Template
+# DigitalDingo
 
-This is a full-stack template project for Software Composers to create  applications with AI.
+A professional web design and development agency website featuring Australian Indigenous-inspired aesthetics and modern web technologies.
 
-## Getting started
-To create a new project, you go to `/paths`, choose from our list of Paths, and then use Cursor's Composer feature to quickly scaffold your project!
+## Overview
 
-You can also edit the Path's prompt template to be whatever you like!
+DigitalDingo is a UK-based digital agency specializing in creating high-performance websites and digital solutions. The website showcases our services through an engaging interface that blends Aboriginal art influences with contemporary design.
 
-## Technologies used
-This doesn't really matter, but is useful for the AI to understand more about this project. We are using the following technologies
-- React with Next.js 14 App Router
+## Features
+
+- **Interactive Design**
+  - Aboriginal-inspired flow field background animation
+  - Responsive layout with smooth animations
+  - Modern UI with Indigenous art elements
+
+- **Core Services**
+  - Web Design & Development
+  - UI/UX Design
+  - Digital Marketing
+  - Brand Development
+  - SEO Optimization
+  - Maintenance & Support
+
+- **Portfolio Showcase**
+  - Dynamic portfolio gallery
+  - Firebase-integrated content management
+  - Responsive image handling
+
+- **Contact System**
+  - Interactive contact form
+  - Email integration
+  - GPT-4 powered chat assistant
+
+## Technology Stack
+
+- Next.js 14 (App Router)
+- React
 - TailwindCSS
-- Firebase Auth, Storage, and Database
-- Multiple AI endpoints including OpenAI, Anthropic, and Replicate using Vercel's AI SDK
+- Firebase (Auth, Storage, Database)
+- Three.js
+- Framer Motion
+- TypeScript
+
+## Admin Features
+
+- Dashboard for managing contacts
+- Portfolio management system
+- Chat records tracking
+- Analytics integration (upcoming)
+- Portfolio site builder
+
+## Contact
+
+- Email: hello@digitaldingo.uk
+- Phone: +44 7954 757 626
+- Website: [digitaldingo.uk](https://digitaldingo.uk)
+
+## License
+
+© 2024 DigitalDingo. All rights reserved.
