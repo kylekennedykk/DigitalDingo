@@ -1,20 +1,41 @@
 import { db } from '@/lib/firebase/firebase'
 import { doc, updateDoc } from 'firebase/firestore'
+import { NextResponse } from 'next/server'
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { chatId, endTime, duration } = await req.json()
+    const { chatId, endTime, duration } = await request.json()
 
-    const chatRef = doc(db, 'chats', chatId)
-    await updateDoc(chatRef, {
-      'metadata.endTime': endTime,
-      'metadata.duration': duration,
-      status: 'ended'
-    })
+    if (!chatId) {
+      return NextResponse.json(
+        { error: 'Chat ID is required' },
+        { status: 400 }
+      )
+    }
 
-    return Response.json({ success: true })
+    try {
+      // Update the chat session in Firebase
+      const chatRef = doc(db, 'chatSessions', chatId)
+      await updateDoc(chatRef, {
+        status: 'ended',
+        endTime: new Date(endTime),
+        duration,
+        updatedAt: new Date()
+      })
+
+      return NextResponse.json({ success: true })
+    } catch (dbError) {
+      console.error('Firebase error:', dbError)
+      return NextResponse.json(
+        { error: 'Database update failed' },
+        { status: 500 }
+      )
+    }
   } catch (error) {
-    console.error('Chat end error:', error)
-    return Response.json({ error: 'Failed to end chat' }, { status: 500 })
+    console.error('Request processing error:', error)
+    return NextResponse.json(
+      { error: 'Invalid request format' },
+      { status: 400 }
+    )
   }
 } 

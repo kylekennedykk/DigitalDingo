@@ -9,7 +9,7 @@ import { db } from '@/lib/firebase/firebase'
 interface Message {
   role: 'user' | 'assistant'
   content: string
-  timestamp: Date
+  timestamp: Date | string
 }
 
 interface ChatMetadata {
@@ -39,6 +39,7 @@ export function AIChatBox() {
   const [userName, setUserName] = useState<string>('')
   const [isAwaitingName, setIsAwaitingName] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [showPrompt, setShowPrompt] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -47,6 +48,16 @@ export function AIChatBox() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isOpen) {
+        setShowPrompt(true)
+      }
+    }, 30000) // 30 seconds
+
+    return () => clearTimeout(timer)
+  }, [isOpen])
 
   const initializeChat = async () => {
     console.log('Initializing chat...')
@@ -112,7 +123,7 @@ export function AIChatBox() {
       setMessages([{
         role: 'assistant',
         content: "G'day! I'm the DigitalDingo assistant. Before we start, could you please tell me your name?",
-        timestamp: new Date()
+        timestamp: new Date().toISOString()
       }])
       setIsAwaitingName(true)
     } catch (error) {
@@ -123,6 +134,7 @@ export function AIChatBox() {
   const handleOpen = () => {
     console.log('Opening chat...')
     setIsOpen(true)
+    setShowPrompt(false)
     if (!chatId) {
       initializeChat()
     }
@@ -130,26 +142,33 @@ export function AIChatBox() {
 
   const handleClose = async () => {
     console.log('Closing chat...')
-    if (chatId && metadata) {
-      const endTime = new Date()
-      const duration = Math.floor((endTime.getTime() - metadata.startTime.getTime()) / 1000)
-      const minutes = Math.floor(duration / 60)
-      const seconds = duration % 60
-      const durationString = `${minutes}m ${seconds}s`
+    try {
+      if (chatId && metadata) {
+        const endTime = new Date()
+        const duration = Math.floor((endTime.getTime() - metadata.startTime.getTime()) / 1000)
+        const minutes = Math.floor(duration / 60)
+        const seconds = duration % 60
+        const durationString = `${minutes}m ${seconds}s`
 
-      await fetch('/api/chat/end', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chatId,
-          endTime,
+        // Update Firebase directly instead of going through the API
+        const chatRef = doc(db, 'chatSessions', chatId)
+        await updateDoc(chatRef, {
+          status: 'ended',
+          endTime: endTime,
           duration: durationString,
-        }),
-      })
+          updatedAt: new Date()
+        })
+      }
+    } catch (error) {
+      console.warn('Error during chat closure:', error)
+    } finally {
+      setIsOpen(false)
+      setMessages([])
+      setChatId(null)
+      setMetadata(null)
+      setUserName('')
+      setIsAwaitingName(false)
     }
-    setIsOpen(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -221,6 +240,34 @@ export function AIChatBox() {
 
   return (
     <>
+      <AnimatePresence>
+        {showPrompt && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-24 right-8 max-w-xs z-50"
+          >
+            <div className="bg-white rounded-2xl shadow-lg">
+              <div className="relative p-4">
+                <button 
+                  onClick={() => setShowPrompt(false)}
+                  className="absolute -top-2 -right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                >
+                  <X className="w-3 h-3 text-neutral-500" />
+                </button>
+                <div className="text-neutral-900 text-sm">
+                  Need some help or want to speak to someone?
+                </div>
+                <div 
+                  className="absolute -bottom-2 right-4 w-3 h-3 bg-white transform rotate-45"
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <button
         onClick={handleOpen}
         className="fixed bottom-4 right-4 p-4 bg-neutral-900 text-white rounded-full shadow-lg hover:scale-110 transition-transform z-50"
@@ -236,10 +283,13 @@ export function AIChatBox() {
             exit={{ opacity: 0, y: 100 }}
             className="fixed bottom-20 right-4 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-50"
           >
-            <div className="p-4 border-b flex justify-between items-center">
-              <h3 className="font-semibold">Chat with DigitalDingo</h3>
-              <button onClick={handleClose} className="p-2 hover:bg-neutral-100 rounded-full">
-                <X className="w-5 h-5" />
+            <div className="p-4 border-b flex justify-between items-center bg-white">
+              <h3 className="font-medium text-neutral-900">Chat with DigitalDingo</h3>
+              <button 
+                onClick={handleClose} 
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-neutral-500" />
               </button>
             </div>
 
@@ -250,9 +300,9 @@ export function AIChatBox() {
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg ${
+                    className={`max-w-[80%] p-3 rounded-2xl ${
                       message.role === 'user'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-black text-white ml-auto'
                         : 'bg-neutral-100 text-neutral-900'
                     }`}
                   >
@@ -262,29 +312,31 @@ export function AIChatBox() {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-neutral-100 p-3 rounded-lg">
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                  <div className="bg-neutral-100 p-3 rounded-2xl">
+                    <Loader2 className="w-5 h-5 animate-spin text-neutral-500" />
                   </div>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your message..."
-                className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                <Send className="w-5 h-5" />
-              </button>
+            <form onSubmit={handleSubmit} className="p-4 border-t bg-white">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1 p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 text-neutral-900 placeholder:text-neutral-400"
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="p-2 bg-black text-white rounded-xl hover:bg-neutral-800 disabled:opacity-50 disabled:hover:bg-black transition-colors"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
             </form>
           </motion.div>
         )}
