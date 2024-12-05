@@ -40,6 +40,18 @@ interface Contact {
   }
 }
 
+const getDateFromTimestamp = (timestamp: any) => {
+  if (!timestamp) return new Date();
+  
+  // Handle Firestore Timestamp
+  if (timestamp?.toDate) {
+    return timestamp.toDate();
+  }
+  
+  // Handle regular date strings or numbers
+  return new Date(timestamp);
+};
+
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
@@ -300,7 +312,7 @@ export default function ContactsPage() {
                   <div key={note.id} className="bg-neutral-50 p-4 rounded-lg">
                     <div className="text-sm mb-2">{note.content}</div>
                     <div className="text-xs text-neutral-500 flex justify-between items-center">
-                      <span>{format(new Date(note.timestamp), 'PPp')}</span>
+                      <span>{format(getDateFromTimestamp(note.timestamp), 'PPp')}</span>
                       <button
                         onClick={() => handleDeleteNote(note.id)}
                         className="text-red-600 hover:text-red-700"
