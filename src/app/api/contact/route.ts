@@ -7,44 +7,52 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export async function POST(req: Request) {
   try {
     const data = await req.json()
-    const { name, email, phone, message } = data
+    
+    // Validate required fields
+    if (!data.name || !data.email || !data.message) {
+      return Response.json({
+        error: 'Missing required fields',
+        details: 'Name, email and message are required'
+      }, { status: 400 })
+    }
 
     // Save to Firebase
     const contactRef = await addDoc(collection(db, 'contacts'), {
-      name,
-      email,
-      phone,
-      message,
+      ...data,
       status: 'new',
       createdAt: serverTimestamp(),
-      source: 'chat',
+      source: data.source || 'web',
       notes: [],
       lastUpdated: serverTimestamp()
     })
 
-    // Send email notification using Resend
-    await resend.emails.send({
-      from: 'DigitalDingo <hello@digitaldingo.uk>',
-      to: 'hello@digitaldingo.uk',
-      subject: `New Contact Form Submission from ${name}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-          <p><strong>Message:</strong> ${message}</p>
-          <p><strong>Source:</strong> AI Chat</p>
-          <hr />
-          <p style="color: #666; font-size: 14px;">
-            This contact was submitted through the AI chat assistant on digitaldingo.uk
-          </p>
-        </div>
-      `,
-      replyTo: email
-    })
+    // Send email notification
+    try {
+      await resend.emails.send({
+        from: 'DigitalDingo <hello@digitaldingo.uk>',
+        to: 'hello@digitaldingo.uk',
+        subject: `New Contact Form Submission from ${data.name}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Phone:</strong> ${data.phone || 'Not provided'}</p>
+            <p><strong>Message:</strong> ${data.message}</p>
+            <p><strong>Source:</strong> ${data.source || 'Web Form'}</p>
+          </div>
+        `,
+        replyTo: data.email
+      })
+    } catch (error) {
+      console.error('Failed to send email notification:', error)
+      // Continue even if email fails
+    }
 
-    return Response.json({ success: true, id: contactRef.id })
+    return Response.json({ 
+      success: true, 
+      id: contactRef.id 
+    })
   } catch (error) {
     console.error('Contact submission error:', error)
     return Response.json({ 

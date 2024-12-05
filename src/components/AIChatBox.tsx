@@ -29,6 +29,14 @@ interface ChatMetadata {
   }
 }
 
+interface ContactInfo {
+  name?: string
+  email?: string
+  phone?: string
+  message?: string
+  complete?: boolean
+}
+
 export function AIChatBox() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
@@ -40,6 +48,7 @@ export function AIChatBox() {
   const [isAwaitingName, setIsAwaitingName] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showPrompt, setShowPrompt] = useState(false)
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({})
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -173,42 +182,20 @@ export function AIChatBox() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!input.trim() || isLoading) return
-
-    const userMessage = { 
-      role: 'user' as const, 
-      content: input, 
-      timestamp: new Date().toISOString()
-    }
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
+    if (!input.trim()) return
 
     try {
-      if (isAwaitingName) {
-        // Save the user's name
-        setUserName(input)
-        setIsAwaitingName(false)
-        
-        // Update chat in Firebase with user's name
-        if (chatId) {
-          const chatRef = doc(db, 'chatSessions', chatId)
-          await updateDoc(chatRef, {
-            userName: input
-          })
-        }
+      setInput('')
+      setIsLoading(true)
 
-        // Add response after getting name
-        const assistantMessage: Message = {
-          role: 'assistant',
-          content: `Nice to meet you, ${input}! How can I help you with your web design needs today?`,
-          timestamp: new Date().toISOString()
-        }
-        setMessages(prev => [...prev, assistantMessage])
-        setIsLoading(false)
-        return
-      }
+      // Add user message to chat
+      setMessages(prev => [...prev, {
+        role: 'user',
+        content: input,
+        timestamp: new Date()
+      }])
 
+      // Send chat request
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -217,22 +204,77 @@ export function AIChatBox() {
         body: JSON.stringify({
           message: input,
           chatId,
-          messages: messages.map(m => ({ role: m.role, content: m.content }))
-        }),
+          messages: messages.map(m => ({
+            role: m.role,
+            content: m.content
+          })),
+          contactInfo
+        })
       })
 
-      if (!response.ok) throw new Error('Failed to send message')
-
-      const data = await response.json()
-      const assistantMessage = {
-        role: 'assistant' as const,
-        content: data.message,
-        timestamp: new Date().toISOString()
+      if (!response.ok) {
+        throw new Error('Failed to send message')
       }
 
-      setMessages(prev => [...prev, assistantMessage])
+      const data = await response.json()
+      console.log('Chat response:', data)
+
+      // Update contact info if provided
+      if (data.contactInfo) {
+        console.log('Updating contact info:', data.contactInfo)
+        setContactInfo(prev => ({
+          ...prev,
+          ...data.contactInfo
+        }))
+
+        // If contact info is complete, submit it
+        if (data.contactInfo.complete) {
+          console.log('Contact info complete, submitting...')
+          const submitResponse = await fetch('/api/chat/submit-contact', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...data.contactInfo,
+              chatId
+            })
+          })
+
+          if (!submitResponse.ok) {
+            throw new Error('Failed to submit contact')
+          }
+
+          const submitData = await submitResponse.json()
+          console.log('Contact submission response:', submitData)
+        }
+      }
+
+      // Add AI response to chat
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.message,
+        timestamp: new Date()
+      }])
+
+      // Update chat in Firebase
+      if (chatId) {
+        const chatRef = doc(db, 'chatSessions', chatId)
+        await updateDoc(chatRef, {
+          messages: [
+            ...messages,
+            { role: 'user', content: input, timestamp: new Date() },
+            { role: 'assistant', content: data.message, timestamp: new Date() }
+          ]
+        })
+      }
     } catch (error) {
       console.error('Error:', error)
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Sorry, there was an error processing your message. Please try again.',
+        timestamp: new Date()
+      }])
     } finally {
       setIsLoading(false)
     }

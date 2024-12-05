@@ -32,25 +32,39 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // Portfolio sites collection
+    // AI Chat Contacts collection
+    match /chatContacts/{contact} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Chat Sessions collection
+    match /chatSessions/{session} {
+      allow read, write: if true;
+    }
+
+    // Portfolio sites collection - Allow public read access
     match /portfolio-sites/{siteId} {
-      allow read: if resource.data.status == 'published' || isAdmin();
+      allow read: if true;  // Changed to allow public read access
       allow write: if isAdmin();
       
+      // Allow public read access to sections
       match /sections/{sectionId} {
-        allow read: if get(/databases/$(database)/documents/portfolio-sites/$(siteId)).data.status == 'published' || isAdmin();
+        allow read: if true;  // Changed to allow public read access
         allow write: if isAdmin();
       }
 
+      // Allow public read access to assets
       match /assets/{assetId} {
-        allow read: if get(/databases/$(database)/documents/portfolio-sites/$(siteId)).data.status == 'published' || isAdmin();
+        allow read: if true;  // Changed to allow public read access
         allow write: if isAdmin();
       }
     }
 
-    // External portfolio items collection
+    // External portfolio items collection - Allow public read access
     match /portfolio-external/{itemId} {
-      allow read: if resource.data.published == true || isAdmin();
+      allow read: if true;  // Changed to allow public read access
       allow write: if isAdmin();
     }
 
@@ -80,6 +94,11 @@ service cloud.firestore {
     match /analytics/{docId} {
       allow read: if isAdmin();
       allow write: if isAdmin();
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 } 
