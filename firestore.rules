@@ -1,37 +1,115 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Content collection (for about page and other content)
+    match /content/{document} {
+      allow read: if true;
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // Team members collection
+    match /team/{member} {
+      allow read: if true;
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
     // Contact submissions collection
     match /contacts/{contact} {
-      allow read: if request.auth != null && request.auth.token.admin == true;
-      // Anyone can create a contact, but only admins can update/delete
+      allow read: if isAdmin();
       allow create: if true;
-      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+      allow update, delete: if isAdmin();
     }
 
-    // Portfolio sites collection
+    // Contact submissions with notes collection
+    match /contactSubmissions/{submission} {
+      allow read: if isAuthenticated();
+      allow create: if true;
+      // Allow authenticated users to update notes array
+      allow update: if isAuthenticated() && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['notes']) ||
+        isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // AI Chat Contacts collection
+    match /chatContacts/{contact} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Chat Sessions collection
+    match /chatSessions/{session} {
+      allow read, write: if true;
+    }
+
+    // Portfolio sites collection - Allow public read access
     match /portfolio-sites/{siteId} {
-      // Public can read, only admin can write
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
+      allow read: if true;  // Changed to allow public read access
+      allow write: if isAdmin();
       
-      // Site sections subcollection
+      // Allow public read access to sections
       match /sections/{sectionId} {
-        allow read: if true;
-        allow write: if request.auth != null && request.auth.token.admin == true;
+        allow read: if true;  // Changed to allow public read access
+        allow write: if isAdmin();
       }
 
-      // Site assets subcollection (for images, etc.)
+      // Allow public read access to assets
       match /assets/{assetId} {
-        allow read: if true;
-        allow write: if request.auth != null && request.auth.token.admin == true;
+        allow read: if true;  // Changed to allow public read access
+        allow write: if isAdmin();
       }
     }
 
-    // Allow public read access to portfolio items
-    match /portfolio/{document=**} {
-      allow read: true;  // Anyone can read portfolio items
-      allow write: if request.auth != null;  // Only authenticated users can write
+    // External portfolio items collection - Allow public read access
+    match /portfolio-external/{itemId} {
+      allow read: if true;  // Changed to allow public read access
+      allow write: if isAdmin();
+    }
+
+    // User profiles collection
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    // Settings collection
+    match /settings/{setting} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // AI chat history collection
+    match /chat-history/{chatId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.userId || isAdmin()
+      );
+      allow create: if request.auth != null;
+      allow update, delete: if isAdmin();
+    }
+
+    // Analytics collection
+    match /analytics/{docId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 } 
