@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Contact submissions collection
+    match /contacts/{contact} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      // Anyone can create a contact, but only admins can update/delete
+      allow create: if true;
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Portfolio sites collection
+    match /portfolio-sites/{siteId} {
+      // Public can read, only admin can write
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+      
+      // Site sections subcollection
+      match /sections/{sectionId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.token.admin == true;
+      }
+
+      // Site assets subcollection (for images, etc.)
+      match /assets/{assetId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.token.admin == true;
+      }
+    }
+
+    // Allow public read access to portfolio items
+    match /portfolio/{document=**} {
+      allow read: true;  // Anyone can read portfolio items
+      allow write: if request.auth != null;  // Only authenticated users can write
+    }
+  }
+} 

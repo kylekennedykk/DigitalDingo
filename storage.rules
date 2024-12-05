@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Allow public read access to portfolio thumbnails
+    match /portfolio-thumbnails/{fileName} {
+      allow read: if true;  // Anyone can read portfolio thumbnails
+      allow write: if isAdmin();  // Only admins can upload/delete
+    }
+
+    // Default rule - deny everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+} 
