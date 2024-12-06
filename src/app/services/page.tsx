@@ -105,10 +105,10 @@ export default function ServicesPage() {
   ];
 
   return (
-    <PageWithFlow variant="dark" opacity={0.8}>
-      <main>
+    <PageWithFlow variant="dark" opacity={0.4}>
+      <main className="relative z-20">
         {/* Hero Section */}
-        <section className="relative py-32">
+        <section className="relative pt-32 pb-16">
           <div className="relative z-10">
             <div className="container mx-auto px-4">
               <motion.div
@@ -117,18 +117,19 @@ export default function ServicesPage() {
                 variants={fadeIn}
                 className="text-center"
               >
-                <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-black">
-                  Our Services
+                <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold mb-8 text-black leading-tight">
+                  Transforming Digital<br />
+                  Visions into Reality
                 </h1>
-                <div className="max-w-3xl mx-auto">
-                  <p className="text-lg md:text-xl mb-4 text-black">
-                    Transforming Digital Visions into Reality
-                  </p>
-                  <p className="text-base md:text-lg text-black">
-                    We offer comprehensive digital solutions tailored to your unique needs. 
-                    From stunning web design to powerful functionality, we're here to help 
-                    your business thrive in the digital landscape.
-                  </p>
+                <div className="max-w-4xl mx-auto">
+                  <div className="pt-12">
+                    <p className="text-base md:text-lg mb-6 text-black">
+                      We provide a full suite of digital solutions thoughtfully crafted to fit your unique needs. From visually engaging web design and intuitive user experiences, to strategic marketing and rock-solid development, we're committed to helping your business stand out in an ever-evolving online world.
+                    </p>
+                    <p className="text-base md:text-lg text-black">
+                      Our approach is simple: we listen, collaborate, and deliver solutions designed to move your business forward. Whether you're launching a new venture or looking to optimize your current digital presence, we're here to guide you every step of the way—ensuring your brand not only thrives, but leads the pack.
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -136,9 +137,7 @@ export default function ServicesPage() {
         </section>
 
         {/* Services Grid */}
-        <section 
-          className="py-24"
-        >
+        <section className="relative py-24">
           <div className="container mx-auto px-4">
             <motion.div 
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -151,15 +150,15 @@ export default function ServicesPage() {
                 <motion.div
                   key={index}
                   variants={fadeIn}
-                  className="group relative overflow-hidden rounded-2xl bg-white/90 p-6 shadow-xl 
-                    transition-all duration-300 hover:shadow-2xl border border-white/20
-                    transform hover:-translate-y-1"
+                  className="group relative overflow-hidden rounded-2xl bg-white/95 p-6 shadow-xl 
+                    transition-all duration-300 hover:shadow-2xl border border-neutral-200
+                    backdrop-blur-sm transform hover:-translate-y-1"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-white/30 
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/90 to-white/80 
                     opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
                   <div className="relative z-10">
-                    <div className="mb-4 inline-block rounded-full bg-white/20 p-3">
+                    <div className="mb-4 inline-block rounded-full bg-neutral-100 p-3">
                       <service.icon className="h-6 w-6 text-black" />
                     </div>
                     

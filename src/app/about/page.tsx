@@ -58,10 +58,14 @@ export default function AboutPage() {
     <PageWithFlow variant="dark" opacity={0.8}>
       <div className="min-h-screen">
         {/* Hero Section */}
-        <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+        <section className="relative py-24 flex items-center justify-center overflow-hidden">
           <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold mb-6 text-black">About DigitalDingo</h1>
-            <p className="text-xl text-black">{content?.mainText}</p>
+            <h1 className="text-5xl font-bold mb-8 text-black">About DigitalDingo</h1>
+            <div className="prose prose-lg max-w-none">
+              <p className="text-xl text-black whitespace-pre-wrap">
+                {content?.mainText}
+              </p>
+            </div>
           </div>
         </section>
 

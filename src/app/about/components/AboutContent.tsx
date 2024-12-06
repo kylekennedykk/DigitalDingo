@@ -39,6 +39,16 @@ const defaultContent = `
   </p>
 `
 
+function formatDescription(text: string) {
+  return text.split('\n').map((paragraph, index) => (
+    paragraph.trim() && (
+      <p key={index} className="text-neutral-600">
+        {paragraph}
+      </p>
+    )
+  ));
+}
+
 export function AboutContent({ initialData }: AboutContentProps) {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
   const content = initialData.content || defaultContent
@@ -81,6 +91,9 @@ export function AboutContent({ initialData }: AboutContentProps) {
               </div>
               <h3 className="font-heading text-xl mb-1">{member.name}</h3>
               <p className="text-neutral-600">{member.role}</p>
+              <div className="space-y-2">
+                {formatDescription(member.description)}
+              </div>
             </div>
           ))}
         </div>
@@ -103,7 +116,9 @@ export function AboutContent({ initialData }: AboutContentProps) {
             />
           </div>
           <h3 className="font-heading text-xl">{selectedMember?.role}</h3>
-          <p className="text-neutral-600">{selectedMember?.description}</p>
+          <div className="space-y-2">
+            {formatDescription(selectedMember?.description || '')}
+          </div>
         </div>
       </Dialog>
     </main>

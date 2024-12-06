@@ -17,8 +17,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 })
 
 export const metadata = {
-  title: 'DigitalDingo | Indigenous-Inspired Web Design & Development',
-  description: 'Professional web design services with Australian Indigenous-inspired aesthetics, combining traditional art with modern technology.',
+  title: 'DigitalDingo | Web Design & Development',
+  description: 'Professional web design and development services by DigitalDingo',
   keywords: 'web design, Indigenous art, Australian web design, digital agency',
 }
 

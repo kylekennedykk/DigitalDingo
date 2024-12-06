@@ -124,9 +124,9 @@ export default function AboutContent() {
 
       if (imageFile) {
         // Upload new image
-        const imageRef = ref(storage, `team/${Date.now()}-${imageFile.name}`)
-        await uploadBytes(imageRef, imageFile)
-        imageUrl = await getDownloadURL(imageRef)
+        const storageRef = ref(storage, `team/${Date.now()}-${imageFile.name}`)
+        await uploadBytes(storageRef, imageFile)
+        imageUrl = await getDownloadURL(storageRef)
 
         // Delete old image if exists and updating
         if (editingMember.id && editingMember.imageUrl) {
@@ -139,28 +139,36 @@ export default function AboutContent() {
         }
       }
 
+      const memberData = {
+        name: editingMember.name,
+        role: editingMember.role,
+        bio: editingMember.bio.trim(),
+        imageUrl: imageUrl || null,
+        updatedAt: new Date().toISOString()
+      }
+
       if (editingMember.id) {
         // Update existing member
         const docRef = doc(db, 'team', editingMember.id)
-        await updateDoc(docRef, {
-          ...editingMember,
-          imageUrl
-        })
+        await updateDoc(docRef, memberData)
+        console.log('Updated member:', editingMember.id)
       } else {
         // Add new member
-        await addDoc(collection(db, 'team'), {
-          ...editingMember,
-          imageUrl
+        const docRef = await addDoc(collection(db, 'team'), {
+          ...memberData,
+          createdAt: new Date().toISOString()
         })
+        console.log('Added new member:', docRef.id)
       }
       
-      await fetchMembers()
+      await fetchMembers() // Refresh the list
       setShowMemberForm(false)
       setEditingMember(null)
       setImageFile(null)
       setImagePreview('')
     } catch (error) {
       console.error('Error saving team member:', error)
+      alert('Failed to save team member. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -259,7 +267,7 @@ export default function AboutContent() {
           <h2 className="text-2xl font-bold text-gray-900">Team Members</h2>
           <button
             onClick={() => {
-              setEditingMember({ ...defaultMember, order: members.length })
+              setEditingMember({ ...defaultMember })
               setShowMemberForm(true)
               setImagePreview('')
             }}
@@ -301,7 +309,7 @@ export default function AboutContent() {
                     </button>
                   </div>
                 </div>
-                <p className="mt-2 text-gray-600">{member.bio}</p>
+                <p className="mt-2 text-gray-600 whitespace-pre-wrap">{member.bio}</p>
                 {member.imageUrl && (
                   <img 
                     src={member.imageUrl} 
@@ -347,11 +355,24 @@ export default function AboutContent() {
                 <label className="block text-sm font-medium text-gray-700">Bio</label>
                 <textarea
                   value={editingMember.bio}
-                  onChange={(e) => setEditingMember({ ...editingMember, bio: e.target.value })}
-                  rows={4}
-                  className="mt-1 block w-full px-3 py-2 border rounded-md"
+                  onChange={(e) => setEditingMember({ 
+                    ...editingMember, 
+                    bio: e.target.value
+                  })}
+                  rows={10}
+                  className="mt-1 block w-full px-3 py-2 border rounded-md resize-y min-h-[200px] font-mono"
+                  placeholder="Enter bio text. Press Enter twice for new paragraphs:
+
+First paragraph goes here.
+
+Second paragraph goes here.
+
+Third paragraph goes here."
                   required
                 />
+                <p className="mt-1 text-sm text-gray-500">
+                  Press Enter twice between paragraphs. Leave a blank line between each paragraph.
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Image</label>
