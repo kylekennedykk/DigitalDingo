@@ -20,6 +20,7 @@ import {
 import { GradientCard } from '@/components/GradientCard'
 import Image from 'next/image'
 import { PageWithFlow } from '@/components/layout/PageWithFlow'
+import { LatestProjects } from '@/components/LatestProjects'
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -296,66 +297,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section className="bg-[#D17B30] py-32">
-        <motion.div 
-          className="container mx-auto px-4"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={container}
-        >
-          <motion.h2 
-            className="font-heading text-4xl md:text-5xl text-center mb-16 text-white"
-            variants={fadeIn}
-          >
-            Latest Projects
-          </motion.h2>
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            variants={stagger}
-          >
-            {[
-              {
-                image: '/images/outback-1.jpg',
-                title: 'Uluru Sunrise',
-                description: 'A stunning website capturing the essence of the Red Centre'
-              },
-              {
-                image: '/images/outback-2.jpg',
-                title: 'Kimberley Coast',
-                description: "Digital platform showcasing Australia's rugged northwest"
-              },
-              {
-                image: '/images/outback-3.jpg',
-                title: 'Flinders Ranges',
-                description: "Modern web experience for South Australia's ancient landscapes"
-              }
-            ].map((project) => (
-              <motion.div
-                key={project.title}
-                variants={fadeIn}
-                className="group relative aspect-video overflow-hidden rounded-2xl bg-white/10
-                  transform transition-transform hover:-translate-y-2"
-              >
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent 
-                  opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute inset-0 p-8 flex flex-col justify-end text-white 
-                  opacity-0 group-hover:opacity-100 transition-all duration-300 transform 
-                  translate-y-4 group-hover:translate-y-0">
-                  <h3 className="font-heading text-2xl mb-2">{project.title}</h3>
-                  <p className="text-white/90">{project.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </motion.div>
-      </section>
+      <LatestProjects />
 
       {/* CTA Section */}
       <section className="bg-neutral-900 text-white py-32">

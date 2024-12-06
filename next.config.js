@@ -15,7 +15,7 @@ const nextConfig = {
     return config
   },
   images: {
-    domains: ['firebasestorage.googleapis.com'],
+    domains: ['digitaldingo.uk', 'firebasestorage.googleapis.com'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
@@ -28,14 +28,18 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/api/chat',
+        source: '/:path*',
         headers: [
           {
-            key: 'Cache-Control',
-            value: 'no-store, max-age=0',
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
           },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          }
         ],
-      }
+      },
     ]
   },
   devIndicators: {

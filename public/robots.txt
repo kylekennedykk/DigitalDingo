@@ -1,0 +1,29 @@
+# DigitalDingo robots.txt
+
+# Allow all crawlers
+User-agent: *
+
+# Allow access to all content
+Allow: /
+Allow: /about
+Allow: /services
+Allow: /portfolio
+Allow: /contact
+
+# Prevent crawling of admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /*?* 
+
+# Prevent crawling of search results
+Disallow: /search
+
+# Crawl delay to prevent server overload
+Crawl-delay: 10
+
+# Sitemap location
+Sitemap: https://digitaldingo.uk/sitemap.xml
+
+# Host
+Host: https://digitaldingo.uk 

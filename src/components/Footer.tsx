@@ -1,6 +1,7 @@
 import { DreamtimeFlow } from './DreamtimeFlow'
 import Link from 'next/link'
 import { Mail, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
+import { IndigenousFigure } from './icons/IndigenousFigure'
 
 export function Footer() {
   return (
@@ -12,10 +13,17 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Logo and About Section */}
           <div className="space-y-6">
-            <div className="text-4xl font-heading">
-              <span className="text-white">Digital</span>
-              <span className="text-primary-red">Dingo</span>
-            </div>
+            <Link 
+              href="/" 
+              className="flex items-center gap-1.5 group"
+              aria-label="Digital Dingo Home"
+            >
+              <IndigenousFigure className="w-10 h-10 fill-white group-hover:text-ochre-400 transition-colors duration-300" />
+              <div className="flex flex-col h-10 justify-center gap-[1px]">
+                <span className="text-2xl leading-none text-white">Digital</span>
+                <span className="text-2xl font-bold leading-none text-white">Dingo</span>
+              </div>
+            </Link>
             <p className="text-neutral-300 leading-relaxed">
               Crafting high-performance websites and digital solutions for businesses across the UK and beyond.
             </p>

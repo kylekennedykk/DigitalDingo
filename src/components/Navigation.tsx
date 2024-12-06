@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { theme } from '@/lib/theme'
+import { IndigenousFigure } from './icons/IndigenousFigure'
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -36,8 +37,16 @@ export function Navigation() {
         : 'bg-transparent backdrop-blur-sm'}
     `}>
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="font-heading text-2xl font-bold">
-          DigitalDingo
+        <Link 
+          href="/" 
+          className="flex items-center gap-1.5 group"
+          aria-label="Digital Dingo Home"
+        >
+          <IndigenousFigure className="w-12 h-12 text-ochre-500 group-hover:text-ochre-600 transition-colors duration-300" />
+          <div className="flex flex-col h-12 justify-center gap-[1px]">
+            <span className="text-[1.7rem] leading-none text-neutral-900">Digital</span>
+            <span className="text-[1.7rem] font-bold leading-none text-neutral-900">Dingo</span>
+          </div>
         </Link>
         
         <div className="hidden md:flex items-center gap-8">
