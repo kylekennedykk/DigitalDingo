@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { doc, updateDoc, addDoc, collection } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { ImageUpload } from '@/components/ImageUpload'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Loader2 } from 'lucide-react'
 
 interface ExternalPortfolioItem {
   id: string
@@ -22,6 +22,18 @@ interface ExternalPortfolioFormProps {
   project?: ExternalPortfolioItem
   onCancel: () => void
   onSaveComplete: () => void
+}
+
+// Add loading skeleton
+function FormSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-10 bg-gray-200 rounded" />
+      <div className="h-32 bg-gray-200 rounded" />
+      <div className="h-10 bg-gray-200 rounded" />
+      <div className="h-40 bg-gray-200 rounded" />
+    </div>
+  )
 }
 
 export function ExternalPortfolioForm({ project, onCancel, onSaveComplete }: ExternalPortfolioFormProps) {
@@ -228,8 +240,9 @@ export function ExternalPortfolioForm({ project, onCancel, onSaveComplete }: Ext
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
         >
+          {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           {loading ? 'Saving...' : 'Save Project'}
         </button>
       </div>

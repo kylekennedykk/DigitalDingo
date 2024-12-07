@@ -1,9 +1,9 @@
 'use client'
 
-import Link from 'next/link'
-import Image from 'next/image'
 import { motion, Variants } from 'framer-motion'
 import { usePortfolioItems } from '@/lib/hooks/usePortfolioItems'
+import { ImageWithFallback } from './ImageWithFallback'
+import { Loader2, RefreshCw } from 'lucide-react'
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -26,89 +26,98 @@ const container: Variants = {
 }
 
 export function LatestProjects() {
-  const { items, loading, error } = usePortfolioItems(3)
+  const { 
+    data: items = [],
+    isLoading, 
+    error, 
+    refetch 
+  } = usePortfolioItems(3)
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <section className="bg-[#D17B30] py-32">
+      <div className="py-24">
         <div className="container mx-auto px-4">
-          <h2 className="font-heading text-4xl md:text-5xl text-center mb-16 text-white">
-            Latest Projects
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-white/20 h-64 rounded-2xl mb-4" />
-                <div className="h-6 bg-white/20 rounded w-3/4 mb-2" />
-                <div className="h-4 bg-white/20 rounded w-1/2" />
-              </div>
-            ))}
+          <div className="flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
           </div>
         </div>
-      </section>
+      </div>
     )
   }
 
   if (error) {
-    return null
+    return (
+      <div className="py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4">
+            <p className="text-red-600">
+              {error instanceof Error ? error.message : 'Failed to load portfolio items'}
+            </p>
+            <button
+              onClick={() => refetch()}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!items?.length) {
+    return (
+      <div className="py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center text-gray-600">
+            No portfolio items available
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <section className="bg-[#D17B30] py-32">
-      <motion.div 
-        className="container mx-auto px-4"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={container}
-      >
+    <section className="py-24">
+      <div className="container mx-auto px-4">
         <motion.h2 
-          className="font-heading text-4xl md:text-5xl text-center mb-16 text-white"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
           variants={fadeIn}
+          className="text-3xl md:text-4xl font-bold text-center mb-16"
         >
           Latest Projects
         </motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={container}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
           {items.map((item) => (
             <motion.div
               key={item.id}
               variants={fadeIn}
-              className="group relative aspect-video overflow-hidden rounded-2xl bg-white/10
-                transform transition-transform hover:-translate-y-2"
+              className="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <Image
+              <ImageWithFallback
                 src={item.imageUrl}
                 alt={item.title}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 33vw"
+                width={600}
+                height={400}
+                className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent 
-                opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 p-8 flex flex-col justify-end text-white 
-                opacity-0 group-hover:opacity-100 transition-all duration-300 transform 
-                translate-y-4 group-hover:translate-y-0">
-                <h3 className="font-heading text-2xl mb-2">{item.title}</h3>
-                <p className="text-white/90">{item.description}</p>
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                <p className="text-gray-600">{item.description}</p>
               </div>
             </motion.div>
           ))}
-        </div>
-        <motion.div 
-          className="text-center mt-12"
-          variants={fadeIn}
-        >
-          <Link 
-            href="/portfolio"
-            className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium 
-              bg-white text-neutral-900 rounded-full hover:bg-neutral-900 hover:text-white 
-              transition-all duration-300 hover:scale-105 border-2 border-transparent 
-              hover:border-white"
-          >
-            View All Projects
-          </Link>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   )
 } 

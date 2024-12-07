@@ -1,10 +1,8 @@
 import './globals.css'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
-import { Navigation } from '@/components/Navigation'
-import { Footer } from '@/components/Footer'
-import { AIChatBox } from '@/components/AIChatBox'
-import { AuthProvider } from '@/lib/contexts/AuthContext'
 import { JsonLd } from '@/components/JsonLd'
+import { Providers } from './providers'
+import { ClientLayout } from '@/components/layout/ClientLayout'
 import { Metadata } from 'next'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -87,12 +85,11 @@ export default function RootLayout({
         <JsonLd />
       </head>
       <body className={`${inter.variable} ${plusJakarta.variable} font-body`}>
-        <AuthProvider>
-          <Navigation />
-          {children}
-          <Footer />
-          <AIChatBox />
-        </AuthProvider>
+        <Providers>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+        </Providers>
       </body>
     </html>
   )
