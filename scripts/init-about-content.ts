@@ -1,4 +1,4 @@
-import { db } from '../src/lib/firebase'
+import { db } from '@/lib/firebase'
 import { doc, setDoc } from 'firebase/firestore'
 
 const initializeAboutContent = async () => {

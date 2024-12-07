@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { doc, updateDoc, addDoc, collection } from 'firebase/firestore'
-import { db } from '@/lib/firebase/client'
+import { db } from '@/lib/firebase'
 import { ImageUpload } from '@/components/ImageUpload'
 import { Trash2 } from 'lucide-react'
 

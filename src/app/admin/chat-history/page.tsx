@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { collection, query, orderBy, limit, startAfter, getDocs, writeBatch, doc } from 'firebase/firestore'
-import { db } from '@/lib/firebase/firebase'
+import { db } from '@/lib/firebase'
 import { Checkbox, Button } from '@/components/ui'
 import { Trash2, CheckSquare, Square, RefreshCw } from 'lucide-react'
 import { ChatAnalyticsDialog } from '@/components/dialogs/ChatAnalyticsDialog'

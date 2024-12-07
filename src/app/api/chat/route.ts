@@ -1,5 +1,5 @@
 import { OpenAI } from 'openai'
-import { db } from '@/lib/firebase/firebase'
+import { db } from '@/lib/firebase'
 import { doc, updateDoc } from 'firebase/firestore'
 
 const openai = new OpenAI({

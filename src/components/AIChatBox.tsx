@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, X, Loader2, Send } from 'lucide-react'
 import { doc, updateDoc } from 'firebase/firestore'
-import { db } from '@/lib/firebase/firebase'
+import { db } from '@/lib/firebase'
 
 interface Message {
   role: 'user' | 'assistant'

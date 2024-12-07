@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore'
-import { db } from '@/lib/firebase/client'
+import { db } from '@/lib/firebase'
 import { ExternalPortfolioForm } from './components/ExternalPortfolioForm'
 import { Dialog } from '@/components/ui/Dialog'
 

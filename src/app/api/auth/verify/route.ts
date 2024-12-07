@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { getAuth } from 'firebase-admin/auth'
-import app from '@/lib/firebase/admin'
+import { adminAuth } from '@/lib/firebase/admin'
 
 export async function GET() {
   try {
@@ -11,7 +11,7 @@ export async function GET() {
       return NextResponse.json({ error: 'No session' }, { status: 401 })
     }
 
-    const decodedClaims = await getAuth(app).verifySessionCookie(session, true)
+    const decodedClaims = await getAuth(adminAuth).verifySessionCookie(session, true)
 
     if (!decodedClaims.admin) {
       return NextResponse.json({ error: 'Not admin' }, { status: 403 })

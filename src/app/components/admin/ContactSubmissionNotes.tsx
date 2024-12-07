@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { doc, updateDoc, serverTimestamp, Timestamp, onSnapshot } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/firebase';
+import { auth, db } from '@/lib/firebase';
 import { toast } from 'react-hot-toast';
 
 interface Note {

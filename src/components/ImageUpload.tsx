@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
-import { storage } from '@/lib/firebase/client'
+import { storage } from '@/lib/firebase'
 import Image from 'next/image'
 import { Loader2 } from 'lucide-react'
 import ReactCrop, { Crop, centerCrop, makeAspectCrop } from 'react-image-crop'
