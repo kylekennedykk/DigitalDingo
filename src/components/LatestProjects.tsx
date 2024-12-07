@@ -2,7 +2,7 @@
 
 import { motion, Variants } from 'framer-motion'
 import { usePortfolioItems } from '@/lib/hooks/usePortfolioItems'
-import { ImageWithFallback } from './ImageWithFallback'
+import { PortfolioCard } from '@/components/portfolio/PortfolioCard'
 import { Loader2, RefreshCw } from 'lucide-react'
 
 const fadeIn: Variants = {
@@ -98,23 +98,11 @@ export function LatestProjects() {
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
           {items.map((item) => (
-            <motion.div
-              key={item.id}
-              variants={fadeIn}
-              className="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <ImageWithFallback
-                src={item.imageUrl}
-                alt={item.title}
-                width={600}
-                height={400}
-                className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
-              </div>
-            </motion.div>
+            <PortfolioCard 
+              key={item.id} 
+              item={item} 
+              variant="compact"
+            />
           ))}
         </motion.div>
       </div>

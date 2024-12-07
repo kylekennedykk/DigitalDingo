@@ -1,7 +1,17 @@
 'use client'
 
 import { useEffect, useRef, memo, useMemo } from 'react'
-import * as THREE from 'three'
+import {
+  Scene,
+  PerspectiveCamera,
+  WebGLRenderer,
+  ShaderMaterial,
+  PlaneGeometry,
+  Mesh,
+  Vector2,
+  Color,
+  AdditiveBlending
+} from 'three'
 import { theme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
@@ -74,39 +84,34 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mouseRef = useRef({ x: 0, y: 0 })
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
-  const sceneRef = useRef<THREE.Scene | null>(null)
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
-  const materialRef = useRef<THREE.ShaderMaterial | null>(null)
+  const rendererRef = useRef<WebGLRenderer | null>(null)
+  const sceneRef = useRef<Scene | null>(null)
+  const cameraRef = useRef<PerspectiveCamera | null>(null)
+  const materialRef = useRef<ShaderMaterial | null>(null)
   const frameRef = useRef<number>(0)
   const isVisibleRef = useRef(true)
 
   // Create uniforms once
   const uniforms = useMemo(() => ({
     time: { value: 0 },
-    mousePos: { value: new THREE.Vector2(0, 0) },
-    color: { value: new THREE.Color(theme.colors.primary.ochre) },
-    resolution: { value: new THREE.Vector2(1, 1) },
+    mousePos: { value: new Vector2(0, 0) },
+    color: { value: new Color(theme.colors.primary.ochre) },
+    resolution: { value: new Vector2(1, 1) },
     speed: { value: 1 },
     colorShift: { value: 0 },
   }), [])
 
   useEffect(() => {
-    console.log('DreamtimeFlow mounting', { containerRef: containerRef.current })
-    
-    if (!containerRef.current) {
-      console.error('No container ref')
-      return
-    }
+    if (!containerRef.current) return
 
     // Initialize Three.js scene
-    const scene = new THREE.Scene()
+    const scene = new Scene()
     sceneRef.current = scene
 
-    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
+    const camera = new PerspectiveCamera(75, 1, 0.1, 1000)
     cameraRef.current = camera
 
-    const renderer = new THREE.WebGLRenderer({ 
+    const renderer = new WebGLRenderer({ 
       alpha: true,
       antialias: true,
       powerPreference: 'high-performance',
@@ -115,17 +120,17 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
     })
     rendererRef.current = renderer
 
-    const material = new THREE.ShaderMaterial({
+    const material = new ShaderMaterial({
       uniforms,
       vertexShader,
       fragmentShader,
       transparent: true,
-      blending: THREE.AdditiveBlending,
+      blending: AdditiveBlending,
     })
     materialRef.current = material
 
-    const geometry = new THREE.PlaneGeometry(15, 15, 50, 50)
-    const mesh = new THREE.Mesh(geometry, material)
+    const geometry = new PlaneGeometry(15, 15, 50, 50)
+    const mesh = new Mesh(geometry, material)
     scene.add(mesh)
 
     camera.position.z = 5
@@ -187,33 +192,17 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
     observer.observe(containerRef.current)
 
     return () => {
-      console.log('DreamtimeFlow cleanup')
-      isVisibleRef.current = false
-      cancelAnimationFrame(frameRef.current)
-      
-      // Remove event listeners
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('mousemove', handleMouseMove)
-      
-      // Dispose of Three.js resources
-      geometry.dispose()
-      material.dispose()
-      
-      // Remove canvas element
-      if (containerRef.current?.contains(renderer.domElement)) {
-        containerRef.current.removeChild(renderer.domElement)
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current)
       }
-      
-      // Dispose of renderer
-      renderer.dispose()
-      
-      // Clear refs
-      sceneRef.current = null
-      cameraRef.current = null
-      rendererRef.current = null
-      materialRef.current = null
+      if (rendererRef.current) {
+        rendererRef.current.dispose()
+      }
+      if (materialRef.current) {
+        materialRef.current.dispose()
+      }
     }
-  }, [uniforms, variant])
+  }, [])
 
   return (
     <div

@@ -6,8 +6,15 @@ import { PageWithFlow } from '@/components/layout/PageWithFlow'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { db, storage } from '@/lib/firebase'
-import { collection, getDocs } from 'firebase/firestore'
-import { ref, getDownloadURL } from 'firebase/storage'
+import { 
+  collection, 
+  getDocs, 
+  onSnapshot,
+  DocumentData,
+  QuerySnapshot,
+  QueryDocumentSnapshot 
+} from '@firebase/firestore'
+import { ref, getDownloadURL } from '@firebase/storage'
 
 interface PortfolioItem {
   id: string
@@ -49,15 +56,26 @@ export default function PortfolioPage() {
       try {
         setLoading(true)
         setError(null)
-        const snapshot = await getDocs(collection(db, 'portfolio-external'))
+        console.log('Fetching portfolio items...')
         
+        const portfolioRef = collection(db, 'portfolio-external')
+        const snapshot = await getDocs(portfolioRef)
+        
+        if (snapshot.empty) {
+          console.log('No portfolio items found')
+          setPortfolioItems([])
+          return
+        }
+
         const items = await Promise.all(
           snapshot.docs
-            .filter(doc => doc.data().published)
+            .filter((doc) => {
+              const data = doc.data()
+              console.log('Processing doc:', doc.id, data)
+              return data.published === true
+            })
             .map(async (doc) => {
-              const data = doc.data();
-              console.log('Raw portfolio item data:', data);
-              
+              const data = doc.data()
               return {
                 id: doc.id,
                 title: data.name || '',
@@ -67,9 +85,9 @@ export default function PortfolioPage() {
                 link: data.link || ''
               }
             })
-        );
+        )
 
-        console.log('Final processed portfolio items:', items);
+        console.log('Processed portfolio items:', items)
         setPortfolioItems(items)
       } catch (error) {
         console.error('Error fetching portfolio:', error)

@@ -1,7 +1,7 @@
-import { initializeApp, getApps } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
-import { getStorage } from 'firebase/storage'
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app'
+import { getAuth, connectAuthEmulator, Auth } from 'firebase/auth'
+import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore'
+import { getStorage, connectStorageEmulator, FirebaseStorage } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,10 +12,33 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
+// Initialize Firebase
+let app: FirebaseApp
+let auth: Auth
+let db: Firestore
+let storage: FirebaseStorage
 
-export const db = getFirestore(app)
-export const auth = getAuth(app)
-export const storage = getStorage(app)
+try {
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig)
+  } else {
+    app = getApps()[0]
+  }
+  
+  auth = getAuth(app)
+  db = getFirestore(app)
+  storage = getStorage(app)
 
-export default app 
+  // Connect to emulators only in development and if FIREBASE_USE_EMULATOR is true
+  if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATOR === 'true') {
+    console.log('Using Firebase emulators')
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099')
+    connectFirestoreEmulator(db, '127.0.0.1', 8080)
+    connectStorageEmulator(storage, '127.0.0.1', 9199)
+  }
+} catch (error) {
+  console.error('Error initializing Firebase:', error)
+  throw error
+}
+
+export { app, auth, db, storage }

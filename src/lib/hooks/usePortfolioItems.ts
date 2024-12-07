@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { collection, query, orderBy, limit, getDocs, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore'
+import { collection, query, orderBy, limit, getDocs, QueryDocumentSnapshot, DocumentData, Timestamp } from '@firebase/firestore'
 import { db } from '@/lib/firebase'
 
 export interface PortfolioItem {
