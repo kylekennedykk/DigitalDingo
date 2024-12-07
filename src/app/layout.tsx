@@ -4,6 +4,7 @@ import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
 import { AIChatBox } from '@/components/AIChatBox'
 import { AuthProvider } from '@/lib/contexts/AuthContext'
+import { JsonLd } from '@/components/JsonLd'
 import { Metadata } from 'next'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -77,47 +78,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html 
-      lang="en" 
-      className={`${inter.variable} ${plusJakarta.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#ffffff" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "DigitalDingo",
-              "url": "https://digitaldingo.uk",
-              "logo": "https://digitaldingo.uk/logo.png",
-              "sameAs": [
-                "https://twitter.com/digitaldingo",
-                "https://www.linkedin.com/company/digitaldingo",
-                // Add other social media URLs
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "your-phone",
-                "contactType": "customer service",
-                "email": "hello@digitaldingo.uk",
-                "areaServed": "GB"
-              }
-            })
-          }}
-        />
+        <JsonLd />
       </head>
-      <body className="bg-neutral-100 text-neutral-900">
+      <body className={`${inter.variable} ${plusJakarta.variable} font-body`}>
         <AuthProvider>
           <Navigation />
-          <main className="relative z-10">
-            {children}
-          </main>
+          {children}
           <Footer />
           <AIChatBox />
         </AuthProvider>
