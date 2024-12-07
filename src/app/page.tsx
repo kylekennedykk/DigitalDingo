@@ -20,7 +20,7 @@ import {
 import { GradientCard } from '@/components/GradientCard'
 import Image from 'next/image'
 import { PageWithFlow } from '@/components/layout/PageWithFlow'
-import { LatestProjects } from '@/components/LatestProjects'
+import dynamic from 'next/dynamic'
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -51,6 +51,12 @@ const container: Variants = {
     }
   }
 }
+
+const LatestProjects = dynamic(
+  () => import('@/components/LatestProjects').then(mod => mod.LatestProjects),
+  {
+    loading: () => <div className="h-[600px]" />
+  })
 
 export default function Home() {
   return (

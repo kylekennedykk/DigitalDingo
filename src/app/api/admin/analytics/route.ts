@@ -21,7 +21,24 @@ export async function GET(request: Request) {
 
     // Proceed with fetching analytics data
     const db = getFirestore(adminApp)
-    // ... rest of the analytics logic
+    
+    // Fetch analytics data
+    const analyticsRef = db.collection('analytics').doc('latest')
+    const analyticsDoc = await analyticsRef.get()
+    
+    if (!analyticsDoc.exists) {
+      return NextResponse.json({ error: 'No analytics data found' }, { status: 404 })
+    }
+
+    const data = analyticsDoc.data()
+
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
 
   } catch (error) {
     console.error('Error:', error)

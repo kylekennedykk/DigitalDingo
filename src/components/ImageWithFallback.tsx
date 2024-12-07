@@ -20,13 +20,22 @@ export function ImageWithFallback({
 }: ImageWithFallbackProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
+  
+  // Don't render if no src provided
+  if (!src) {
+    return null
+  }
 
   return (
-    <div className="relative">
+    <div 
+      className="relative"
+      style={{ 
+        contain: 'layout',
+        contentVisibility: 'auto'
+      }}
+    >
       {isLoading && (
-        <div 
-          className={`absolute inset-0 bg-gray-200 animate-pulse rounded ${className}`}
-        />
+        <div className={`absolute inset-0 bg-gray-200 animate-pulse rounded ${className}`} />
       )}
       <Image
         src={error ? '/images/fallback.jpg' : src}

@@ -1,19 +1,11 @@
 'use client'
 
-import { useEffect, useRef, memo, useMemo } from 'react'
-import {
-  Scene,
-  PerspectiveCamera,
-  WebGLRenderer,
-  ShaderMaterial,
-  PlaneGeometry,
-  Mesh,
-  Vector2,
-  Color,
-  AdditiveBlending
-} from 'three'
+import { useEffect, useRef, memo, useMemo, useCallback } from 'react'
+import * as THREE from 'three'
 import { theme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
+import throttle from 'lodash/throttle'
+import { deferredExecution, measurePerformance } from '@/lib/utils/performance'
 
 // Move shader code outside component to prevent recreation
 const vertexShader = `
@@ -84,123 +76,231 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mouseRef = useRef({ x: 0, y: 0 })
-  const rendererRef = useRef<WebGLRenderer | null>(null)
-  const sceneRef = useRef<Scene | null>(null)
-  const cameraRef = useRef<PerspectiveCamera | null>(null)
-  const materialRef = useRef<ShaderMaterial | null>(null)
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
+  const sceneRef = useRef<THREE.Scene | null>(null)
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const frameRef = useRef<number>(0)
   const isVisibleRef = useRef(true)
+  const lastFrameRef = useRef<number>(0)
+  const geometryRef = useRef<THREE.PlaneGeometry | null>(null)
+  const meshRef = useRef<THREE.Mesh | null>(null)
+  const resizeObserverRef = useRef<ResizeObserver | null>(null)
+  const intersectionObserverRef = useRef<IntersectionObserver | null>(null)
+  const throttledMouseMoveRef = useRef<((event: MouseEvent) => void) | null>(null)
 
   // Create uniforms once
   const uniforms = useMemo(() => ({
     time: { value: 0 },
-    mousePos: { value: new Vector2(0, 0) },
-    color: { value: new Color(theme.colors.primary.ochre) },
-    resolution: { value: new Vector2(1, 1) },
+    mousePos: { value: new THREE.Vector2(0, 0) },
+    color: { value: new THREE.Color(theme.colors.primary.ochre) },
+    resolution: { value: new THREE.Vector2(1, 1) },
     speed: { value: 1 },
     colorShift: { value: 0 },
   }), [])
 
-  useEffect(() => {
-    if (!containerRef.current) return
-
-    // Initialize Three.js scene
-    const scene = new Scene()
-    sceneRef.current = scene
-
-    const camera = new PerspectiveCamera(75, 1, 0.1, 1000)
-    cameraRef.current = camera
-
-    const renderer = new WebGLRenderer({ 
+  // Move initialization to a separate function
+  const initScene = () => {
+    if (!containerRef.current) return null
+    
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
+    const renderer = new THREE.WebGLRenderer({ 
       alpha: true,
       antialias: true,
       powerPreference: 'high-performance',
       stencil: false,
       depth: false
     })
-    rendererRef.current = renderer
+    
+    const container = containerRef.current
+    const { clientWidth, clientHeight } = container
+    
+    renderer.setSize(clientWidth, clientHeight)
+    container.appendChild(renderer.domElement)
+    
+    return { scene, camera, renderer }
+  }
 
-    const material = new ShaderMaterial({
-      uniforms,
-      vertexShader,
-      fragmentShader,
-      transparent: true,
-      blending: AdditiveBlending,
-    })
-    materialRef.current = material
-
-    const geometry = new PlaneGeometry(15, 15, 50, 50)
-    const mesh = new Mesh(geometry, material)
-    scene.add(mesh)
-
-    camera.position.z = 5
-
-    const handleResize = () => {
-      if (!containerRef.current || !renderer || !camera) return
-      
-      const width = containerRef.current.clientWidth
-      const height = containerRef.current.clientHeight
-      
-      camera.aspect = width / height
-      camera.updateProjectionMatrix()
-      renderer.setSize(width, height)
-      uniforms.resolution.value.set(width, height)
-    }
-
-    const handleMouseMove = (event: MouseEvent) => {
-      const rect = containerRef.current?.getBoundingClientRect()
-      if (!rect) return
-      
-      const targetX = ((event.clientX - rect.left) / rect.width) * 2 - 1
-      const targetY = -((event.clientY - rect.top) / rect.height) * 2 + 1
-      
-      mouseRef.current.x += (targetX - mouseRef.current.x) * 0.1
-      mouseRef.current.y += (targetY - mouseRef.current.y) * 0.1
-      
-      uniforms.mousePos.value.set(mouseRef.current.x, mouseRef.current.y)
-    }
-
-    const animate = (time: number) => {
-      if (!isVisibleRef.current) return
-      if (!renderer || !scene || !camera) return
-      
+  // Optimize animation loop
+  const animate = useCallback((time: number) => {
+    if (!isVisibleRef.current) return
+    if (!rendererRef.current || !sceneRef.current || !cameraRef.current) return
+    
+    // Limit to 60fps
+    if (time - lastFrameRef.current < 16.67) {
       frameRef.current = requestAnimationFrame(animate)
-      uniforms.time.value = time * 0.001
-      renderer.render(scene, camera)
+      return
     }
-
-    // Initial setup
-    handleResize()
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight)
-    containerRef.current.appendChild(renderer.domElement)
+    
+    lastFrameRef.current = time
+    
+    // Update uniforms
+    uniforms.time.value = time * 0.001
+    
+    // Render
+    rendererRef.current.render(sceneRef.current, cameraRef.current)
     frameRef.current = requestAnimationFrame(animate)
+  }, [uniforms])
 
-    // Event listeners
-    window.addEventListener('resize', handleResize)
-    window.addEventListener('mousemove', handleMouseMove)
+  useEffect(() => {
+    const endMeasure = measurePerformance('DreamtimeFlow init')
+    deferredExecution(() => {
+      const setup = initScene()
+      if (!setup) return
+      const { scene, camera, renderer } = setup
 
-    // Intersection Observer to pause animation when not visible
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisibleRef.current = entry.isIntersecting
-        if (entry.isIntersecting) {
-          frameRef.current = requestAnimationFrame(animate)
-        }
-      },
-      { threshold: 0 }
-    )
-    observer.observe(containerRef.current)
+      // Initialize Three.js scene
+      sceneRef.current = scene
+      cameraRef.current = camera
+      rendererRef.current = renderer
+
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        vertexShader,
+        fragmentShader,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+      })
+      materialRef.current = material
+
+      const geometry = new THREE.PlaneGeometry(15, 15, 50, 50)
+      geometryRef.current = geometry
+      const mesh = new THREE.Mesh(geometry, material)
+      meshRef.current = mesh
+      scene.add(mesh)
+
+      camera.position.z = 5
+
+      const handleResize = () => {
+        if (!containerRef.current || !renderer || !camera) return
+        
+        const width = containerRef.current.clientWidth
+        const height = containerRef.current.clientHeight
+        
+        camera.aspect = width / height
+        camera.updateProjectionMatrix()
+        renderer.setSize(width, height)
+        uniforms.resolution.value.set(width, height)
+      }
+
+      // Create ResizeObserver
+      const resizeObserver = new ResizeObserver(() => {
+        if (!containerRef.current || !renderer || !camera) return
+        
+        const width = containerRef.current.clientWidth
+        const height = containerRef.current.clientHeight
+        
+        camera.aspect = width / height
+        camera.updateProjectionMatrix()
+        renderer.setSize(width, height)
+        uniforms.resolution.value.set(width, height)
+      })
+      
+      // Store observer for cleanup
+      resizeObserverRef.current = resizeObserver
+
+      // Throttle mouse move handler
+      throttledMouseMoveRef.current = throttle((event: MouseEvent) => {
+        const rect = containerRef.current?.getBoundingClientRect()
+        if (!rect) return
+        
+        const targetX = ((event.clientX - rect.left) / rect.width) * 2 - 1
+        const targetY = -((event.clientY - rect.top) / rect.height) * 2 + 1
+        
+        mouseRef.current.x += (targetX - mouseRef.current.x) * 0.1
+        mouseRef.current.y += (targetY - mouseRef.current.y) * 0.1
+        
+        uniforms.mousePos.value.set(mouseRef.current.x, mouseRef.current.y)
+      }, 16)
+
+      if (containerRef.current) {
+        resizeObserverRef.current?.observe(containerRef.current)
+      }
+      if (throttledMouseMoveRef.current) {
+        window.addEventListener('mousemove', throttledMouseMoveRef.current)
+      }
+
+      // Initial setup
+      if (containerRef.current) {
+        handleResize()
+        const { clientWidth, clientHeight } = containerRef.current
+        renderer.setSize(clientWidth, clientHeight)
+      }
+
+      frameRef.current = requestAnimationFrame(animate)
+
+      // Intersection Observer
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          isVisibleRef.current = entry.isIntersecting
+          if (entry.isIntersecting) {
+            frameRef.current = requestAnimationFrame(animate)
+          }
+        },
+        { threshold: 0 }
+      )
+      if (containerRef.current) {
+        observer.observe(containerRef.current)
+      }
+
+      // Store observers for cleanup
+      resizeObserverRef.current = resizeObserver
+      intersectionObserverRef.current = observer
+
+      endMeasure()
+    })
 
     return () => {
+      // Cancel animation frame
       if (frameRef.current) {
         cancelAnimationFrame(frameRef.current)
       }
+
+      // Dispose of Three.js resources
       if (rendererRef.current) {
         rendererRef.current.dispose()
+        rendererRef.current.forceContextLoss()
+        rendererRef.current.domElement.remove()
       }
+
       if (materialRef.current) {
         materialRef.current.dispose()
       }
+
+      if (geometryRef.current) {
+        geometryRef.current.dispose()
+      }
+
+      if (meshRef.current) {
+        meshRef.current.geometry.dispose()
+        if (meshRef.current.material instanceof THREE.Material) {
+          meshRef.current.material.dispose()
+        }
+      }
+
+      // Clean up observers
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect()
+      }
+
+      if (intersectionObserverRef.current) {
+        intersectionObserverRef.current.disconnect()
+      }
+
+      // Clean up event listeners
+      if (throttledMouseMoveRef.current) {
+        window.removeEventListener('mousemove', throttledMouseMoveRef.current)
+        throttledMouseMoveRef.current = null
+      }
+
+      // Clear refs
+      sceneRef.current = null
+      cameraRef.current = null
+      rendererRef.current = null
+      materialRef.current = null
+      geometryRef.current = null
+      meshRef.current = null
     }
   }, [])
 
@@ -218,7 +318,7 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
         background: 'transparent',
         overflow: 'hidden',
         isolation: 'isolate',
-        contain: 'paint layout size'
+        contain: 'paint layout'
       }}
     />
   )

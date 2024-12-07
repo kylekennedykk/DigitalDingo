@@ -27,7 +27,13 @@ export function LoadingSpinner({
 
 export function LoadingCard() {
   return (
-    <div className="p-6 bg-white rounded-lg shadow-sm">
+    <div 
+      className="p-6 bg-white rounded-lg shadow-sm"
+      style={{ 
+        contain: 'content',
+        contentVisibility: 'auto'
+      }}
+    >
       <div className="flex items-center justify-center h-32">
         <LoadingSpinner size="lg" text="Loading..." />
       </div>

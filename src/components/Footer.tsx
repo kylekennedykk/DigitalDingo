@@ -1,18 +1,33 @@
-import { DreamtimeFlow } from './DreamtimeFlow'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Mail, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
 import { IndigenousFigure } from './icons/IndigenousFigure'
 
+const DreamtimeFlow = dynamic(
+  () => import('./DreamtimeFlow').then(mod => mod.DreamtimeFlow),
+  {
+    ssr: false,
+    loading: () => <div className="absolute inset-0 bg-neutral-900" />
+  })
+
 export function Footer() {
   return (
-    <footer className="relative bg-neutral-900 text-white">
+    <footer className="relative bg-neutral-900 text-white"
+      style={{ contain: 'layout paint' }}
+    >
       <div className="absolute inset-0">
         <DreamtimeFlow variant="dark" />
       </div>
-      <div className="container relative z-10 pt-20 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+      <div className="container relative z-10 pt-20 pb-12"
+        style={{ contain: 'content' }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16"
+          style={{ contentVisibility: 'auto' }}
+        >
           {/* Logo and About Section */}
-          <div className="space-y-6">
+          <div className="space-y-6"
+            style={{ contain: 'layout paint' }}
+          >
             <Link 
               href="/" 
               className="flex items-center gap-1.5 group"
@@ -30,7 +45,9 @@ export function Footer() {
           </div>
 
           {/* Contact Information */}
-          <div className="space-y-6">
+          <div className="space-y-6"
+            style={{ contain: 'layout paint' }}
+          >
             <h4 className="font-heading text-xl mb-6">Contact Us</h4>
             <div className="space-y-4">
               <a 
@@ -51,7 +68,9 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="space-y-4"
+            style={{ contain: 'layout paint' }}
+          >
             <h4 className="font-heading text-xl mb-6">Quick Links</h4>
             <nav className="space-y-3">
               {[
@@ -72,7 +91,9 @@ export function Footer() {
           </div>
 
           {/* Social Links */}
-          <div className="space-y-6">
+          <div className="space-y-6"
+            style={{ contain: 'layout paint' }}
+          >
             <h4 className="font-heading text-xl mb-6">Connect With Us</h4>
             <div className="flex gap-4">
               {[
@@ -97,12 +118,18 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 mt-8 border-t border-neutral-800">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-8 mt-8 border-t border-neutral-800"
+          style={{ contain: 'layout paint' }}
+        >
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4"
+            style={{ contain: 'content' }}
+          >
             <p className="text-neutral-400">
               &copy; {new Date().getFullYear()} DigitalDingo. All rights reserved.
             </p>
-            <div className="flex gap-6 text-sm text-neutral-400">
+            <div className="flex gap-6 text-sm text-neutral-400"
+              style={{ contain: 'layout' }}
+            >
               <Link href="/privacy" className="hover:text-primary-ochre transition-colors">
                 Privacy Policy
               </Link>

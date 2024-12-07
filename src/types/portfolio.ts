@@ -90,15 +90,24 @@ export interface Theme {
   }
 }
 
-export interface ExternalPortfolioItem {
+export interface PortfolioItem {
   id: string
   name: string
-  description?: string
-  thumbnail?: string
-  url: string
+  description: string
+  thumbnail: string
   tags?: string[]
+  url?: string
+  published?: boolean
   featured?: boolean
-  published: boolean
-  createdAt: string
-  updatedAt: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface ExternalPortfolioItem {
+  id: string
+  title: string
+  description: string
+  imageUrl: string
+  tags?: string[]
+  url?: string
 } 

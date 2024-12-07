@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, Variants } from 'framer-motion'
-import { usePortfolioItems } from '@/lib/hooks/usePortfolioItems'
+import { usePortfolioItems, PortfolioItem } from '@/lib/hooks/usePortfolioItems'
 import { PortfolioCard } from '@/components/portfolio/PortfolioCard'
 import { Loader2, RefreshCw } from 'lucide-react'
 
@@ -100,7 +100,14 @@ export function LatestProjects() {
           {items.map((item) => (
             <PortfolioCard 
               key={item.id} 
-              item={item} 
+              item={{
+                id: item.id,
+                title: item.title || 'Untitled Project',
+                description: item.description || '',
+                imageUrl: item.imageUrl || '/images/placeholder-portfolio.jpg',
+                tags: item.tags || [],
+                url: item.url
+              }}
               variant="compact"
             />
           ))}
