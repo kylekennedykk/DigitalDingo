@@ -2,7 +2,8 @@
 
 import { motion, Variants } from 'framer-motion'
 import ServiceCard from '@/components/services/ServiceCard'
-import { DreamtimeFlow } from '@/components/DreamtimeFlow'
+import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
+import { useEffect } from 'react'
 import { 
   Globe2, 
   Palette, 
@@ -108,12 +109,15 @@ const servicesData = [
 ]
 
 export default function ServicesContent() {
+  const { showFlow } = useDreamtimeFlow()
+
+  useEffect(() => {
+    showFlow('absolute inset-0 opacity-60')
+  }, [showFlow])
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-earth-50 to-ochre-50">
       <section className="relative py-32">
-        <div className="absolute inset-0 opacity-60">
-          <DreamtimeFlow />
-        </div>
         <div className="relative z-10">
           <div className="container mx-auto px-4">
             <motion.div

@@ -65,15 +65,31 @@ const fragmentShader = `
   }
 `
 
+class DreamtimeFlowError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'DreamtimeFlowError'
+  }
+}
+
 export const DreamtimeFlow = memo(function DreamtimeFlow({ 
   className, 
-  variant = 'dark',
   scale = 1 
 }: {
   className?: string
-  variant?: 'dark' | 'light'
   scale?: number
 }) {
+  const mountCount = useRef(0)
+  
+  useEffect(() => {
+    mountCount.current++
+    console.log(`DreamtimeFlow mount #${mountCount.current}`, { className })
+    
+    return () => {
+      console.log(`DreamtimeFlow unmount #${mountCount.current}`)
+    }
+  }, [className])
+
   const containerRef = useRef<HTMLDivElement>(null)
   const mouseRef = useRef({ x: 0, y: 0 })
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
@@ -99,8 +115,8 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
     colorShift: { value: 0 },
   }), [])
 
-  // Move initialization to a separate function
-  const initScene = () => {
+  // Scene initialization function
+  const initScene = useCallback(() => {
     if (!containerRef.current) return null
     
     const scene = new THREE.Scene()
@@ -120,37 +136,16 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
     container.appendChild(renderer.domElement)
     
     return { scene, camera, renderer }
-  }
+  }, [])
 
-  // Optimize animation loop
-  const animate = useCallback((time: number) => {
-    if (!isVisibleRef.current) return
-    if (!rendererRef.current || !sceneRef.current || !cameraRef.current) return
-    
-    // Limit to 60fps
-    if (time - lastFrameRef.current < 16.67) {
-      frameRef.current = requestAnimationFrame(animate)
-      return
-    }
-    
-    lastFrameRef.current = time
-    
-    // Update uniforms
-    uniforms.time.value = time * 0.001
-    
-    // Render
-    rendererRef.current.render(sceneRef.current, cameraRef.current)
-    frameRef.current = requestAnimationFrame(animate)
-  }, [uniforms])
-
+  // Initialize scene
   useEffect(() => {
-    const endMeasure = measurePerformance('DreamtimeFlow init')
-    deferredExecution(() => {
+    try {
+      console.log('Initializing scene')
       const setup = initScene()
-      if (!setup) return
+      if (!setup) throw new DreamtimeFlowError('Failed to initialize scene')
+      
       const { scene, camera, renderer } = setup
-
-      // Initialize Three.js scene
       sceneRef.current = scene
       cameraRef.current = camera
       rendererRef.current = renderer
@@ -172,136 +167,96 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
 
       camera.position.z = 5
 
-      const handleResize = () => {
+      // Handle resize
+      const handleResize = throttle(() => {
         if (!containerRef.current || !renderer || !camera) return
-        
-        const width = containerRef.current.clientWidth
-        const height = containerRef.current.clientHeight
-        
-        camera.aspect = width / height
+        const { clientWidth, clientHeight } = containerRef.current
+        camera.aspect = clientWidth / clientHeight
         camera.updateProjectionMatrix()
-        renderer.setSize(width, height)
-        uniforms.resolution.value.set(width, height)
+        renderer.setSize(clientWidth, clientHeight)
+        uniforms.resolution.value.set(clientWidth, clientHeight)
+      }, 100) // Throttle to 100ms
+
+      const resizeObserver = new ResizeObserver(handleResize)
+
+      if (containerRef.current) {
+        resizeObserver.observe(containerRef.current)
       }
 
-      // Create ResizeObserver
-      const resizeObserver = new ResizeObserver(() => {
-        if (!containerRef.current || !renderer || !camera) return
-        
-        const width = containerRef.current.clientWidth
-        const height = containerRef.current.clientHeight
-        
-        camera.aspect = width / height
-        camera.updateProjectionMatrix()
-        renderer.setSize(width, height)
-        uniforms.resolution.value.set(width, height)
-      })
-      
-      // Store observer for cleanup
-      resizeObserverRef.current = resizeObserver
-
-      // Throttle mouse move handler
-      throttledMouseMoveRef.current = throttle((event: MouseEvent) => {
+      // Handle mouse movement
+      const handleMouseMove = throttle((event: MouseEvent) => {
         const rect = containerRef.current?.getBoundingClientRect()
         if (!rect) return
-        
-        const targetX = ((event.clientX - rect.left) / rect.width) * 2 - 1
-        const targetY = -((event.clientY - rect.top) / rect.height) * 2 + 1
-        
-        mouseRef.current.x += (targetX - mouseRef.current.x) * 0.1
-        mouseRef.current.y += (targetY - mouseRef.current.y) * 0.1
-        
-        uniforms.mousePos.value.set(mouseRef.current.x, mouseRef.current.y)
+        const x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+        const y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+        uniforms.mousePos.value.set(x, y)
       }, 16)
 
-      if (containerRef.current) {
-        resizeObserverRef.current?.observe(containerRef.current)
-      }
-      if (throttledMouseMoveRef.current) {
-        window.addEventListener('mousemove', throttledMouseMoveRef.current)
-      }
+      window.addEventListener('mousemove', handleMouseMove)
 
-      // Initial setup
-      if (containerRef.current) {
-        handleResize()
-        const { clientWidth, clientHeight } = containerRef.current
-        renderer.setSize(clientWidth, clientHeight)
+      // Animation loop
+      let lastTime = 0
+      const animate = (time: number) => {
+        if (!isVisibleRef.current) return
+        if (!renderer || !scene || !camera) return
+
+        // Limit to 60fps
+        if (time - lastTime < 16.67) {
+          frameRef.current = requestAnimationFrame(animate)
+          return
+        }
+
+        lastTime = time
+        uniforms.time.value = time * 0.001
+        renderer.render(scene, camera)
+        frameRef.current = requestAnimationFrame(animate)
       }
 
       frameRef.current = requestAnimationFrame(animate)
 
-      // Intersection Observer
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          isVisibleRef.current = entry.isIntersecting
-          if (entry.isIntersecting) {
-            frameRef.current = requestAnimationFrame(animate)
+      // Cleanup
+      return () => {
+        console.log('Cleaning up scene')
+        if (frameRef.current) {
+          cancelAnimationFrame(frameRef.current)
+        }
+        resizeObserver.disconnect()
+        window.removeEventListener('mousemove', handleMouseMove)
+        
+        if (renderer) {
+          renderer.dispose()
+          renderer.forceContextLoss()
+          renderer.domElement.remove()
+        }
+        if (material) material.dispose()
+        if (geometry) geometry.dispose()
+        if (mesh) {
+          mesh.geometry.dispose()
+          if (mesh.material instanceof THREE.Material) {
+            mesh.material.dispose()
           }
-        },
-        { threshold: 0 }
-      )
-      if (containerRef.current) {
-        observer.observe(containerRef.current)
-      }
-
-      // Store observers for cleanup
-      resizeObserverRef.current = resizeObserver
-      intersectionObserverRef.current = observer
-
-      endMeasure()
-    })
-
-    return () => {
-      // Cancel animation frame
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current)
-      }
-
-      // Dispose of Three.js resources
-      if (rendererRef.current) {
-        rendererRef.current.dispose()
-        rendererRef.current.forceContextLoss()
-        rendererRef.current.domElement.remove()
-      }
-
-      if (materialRef.current) {
-        materialRef.current.dispose()
-      }
-
-      if (geometryRef.current) {
-        geometryRef.current.dispose()
-      }
-
-      if (meshRef.current) {
-        meshRef.current.geometry.dispose()
-        if (meshRef.current.material instanceof THREE.Material) {
-          meshRef.current.material.dispose()
         }
       }
-
-      // Clean up observers
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect()
-      }
-
-      if (intersectionObserverRef.current) {
-        intersectionObserverRef.current.disconnect()
-      }
-
-      // Clean up event listeners
-      if (throttledMouseMoveRef.current) {
-        window.removeEventListener('mousemove', throttledMouseMoveRef.current)
-        throttledMouseMoveRef.current = null
-      }
-
-      // Clear refs
-      sceneRef.current = null
-      cameraRef.current = null
-      rendererRef.current = null
-      materialRef.current = null
-      geometryRef.current = null
-      meshRef.current = null
+    } catch (error) {
+      console.error('DreamtimeFlow initialization failed:', error)
+      // You might want to report this error to your error tracking service
     }
+  }, [uniforms, initScene]) // Add initScene to dependencies
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting
+        console.log('DreamtimeFlow visibility:', entry.isIntersecting)
+      },
+      { threshold: 0 }
+    )
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
+
+    return () => observer.disconnect()
   }, [])
 
   return (

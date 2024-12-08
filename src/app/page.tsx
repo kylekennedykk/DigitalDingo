@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react'
-import { DreamtimeFlow } from '@/components/DreamtimeFlow'
+import React, { useEffect } from 'react'
+import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
 import Link from 'next/link'
 import { motion, Variants } from 'framer-motion'
 import { 
@@ -58,7 +58,13 @@ const LatestProjects = dynamic(
     loading: () => <div className="h-[600px]" />
   })
 
-export default function Home() {
+export default function HomePage() {
+  const { showFlow } = useDreamtimeFlow()
+
+  useEffect(() => {
+    showFlow('fixed inset-0 -z-10')
+  }, [showFlow])
+
   return (
     <PageWithFlow variant="dark" opacity={0.8}>
       {/* Hero Section */}

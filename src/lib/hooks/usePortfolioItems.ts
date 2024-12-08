@@ -31,7 +31,6 @@ export function usePortfolioItems(itemLimit: number = 3) {
           .filter((doc: QueryDocumentSnapshot<DocumentData>) => doc.data().published)
           .map((doc: QueryDocumentSnapshot<DocumentData>) => {
             const data = doc.data()
-            console.log('Processing portfolio item:', data)
             
             // Convert timestamp string to Date
             let createdDate: Date
@@ -44,7 +43,6 @@ export function usePortfolioItems(itemLimit: number = 3) {
                 createdDate = new Date()
               }
             } catch (error) {
-              console.warn('Error parsing date:', error)
               createdDate = new Date()
             }
 

@@ -1,21 +1,23 @@
 'use client'
 
-import { DreamtimeFlow } from '@/components/DreamtimeFlow'
+import { useEffect } from 'react'
 import { ContactForm } from '@/components/ContactForm'
 import { motion } from 'framer-motion'
 import { Suspense } from 'react'
 import { Mail, Phone, Clock } from 'lucide-react'
+import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
 
 export default function ContactPage() {
+  const { showFlow } = useDreamtimeFlow()
+
+  useEffect(() => {
+    showFlow('absolute inset-0 bg-transparent')
+  }, [showFlow])
+
   return (
     <main className="min-h-screen">
       {/* Contact Form Section */}
       <section className="relative min-h-screen">
-        <div className="absolute inset-0 bg-transparent">
-          <Suspense fallback={<div className="h-screen" />}>
-            <DreamtimeFlow />
-          </Suspense>
-        </div>
         <div className="relative min-h-screen bg-transparent backdrop-blur-sm bg-white/30">
           <div className="container relative z-10 pt-24 pb-24">
             <motion.div

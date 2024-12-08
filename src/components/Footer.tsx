@@ -1,24 +1,15 @@
-import dynamic from 'next/dynamic'
+'use client'
+
 import Link from 'next/link'
 import { Mail, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
 import { IndigenousFigure } from './icons/IndigenousFigure'
 
-const DreamtimeFlow = dynamic(
-  () => import('./DreamtimeFlow').then(mod => mod.DreamtimeFlow),
-  {
-    ssr: false,
-    loading: () => <div className="absolute inset-0 bg-neutral-900" />
-  })
-
 export function Footer() {
   return (
-    <footer className="relative bg-neutral-900 text-white"
+    <footer className="bg-black text-white"
       style={{ contain: 'layout paint' }}
     >
-      <div className="absolute inset-0">
-        <DreamtimeFlow variant="dark" />
-      </div>
-      <div className="container relative z-10 pt-20 pb-12"
+      <div className="container relative pt-20 pb-12"
         style={{ contain: 'content' }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16"

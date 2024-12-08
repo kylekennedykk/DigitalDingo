@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Suspense } from 'react'
 import { LoadingPage } from '@/components/ui/loading-states'
+import { DreamtimeFlowProvider } from '@/lib/contexts/DreamtimeFlowContext'
 
 const inter = Inter({ 
   subsets: ['latin'], 
@@ -88,11 +89,13 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${plusJakarta.variable} font-body`}>
         <Suspense fallback={<LoadingPage />}>
-          <Providers>
-            <ClientLayout>
-              {children}
-            </ClientLayout>
-          </Providers>
+          <DreamtimeFlowProvider>
+            <Providers>
+              <ClientLayout>
+                {children}
+              </ClientLayout>
+            </Providers>
+          </DreamtimeFlowProvider>
         </Suspense>
       </body>
     </html>

@@ -2,8 +2,9 @@
 
 import { motion, Variants } from 'framer-motion'
 import { PortfolioCard } from '@/components/portfolio/PortfolioCard'
-import { DreamtimeFlow } from '@/components/DreamtimeFlow'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
+import { useEffect } from 'react'
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -37,10 +38,15 @@ const portfolioData = [
 ]
 
 export function PortfolioContent() {
+  const { showFlow } = useDreamtimeFlow()
+
+  useEffect(() => {
+    showFlow('absolute inset-0')
+  }, [showFlow])
+
   return (
     <ErrorBoundary>
       <div className="relative">
-        <DreamtimeFlow className="absolute inset-0" />
         <div className="relative z-10">
           <div className="container mx-auto px-4 py-24">
             <motion.div 
