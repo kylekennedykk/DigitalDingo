@@ -100,5 +100,14 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
+
+    // Add delete permission for admin users
+    match /contacts/{contact} {
+      allow delete: if isAdmin();
+    }
+    
+    match /chatContacts/{contact} {
+      allow delete: if isAdmin();
+    }
   }
 } 

@@ -1,9 +1,18 @@
 import { Timestamp } from 'firebase/firestore'
 
-export interface Note {
-  id: string
-  content: string
-  timestamp: string
+export interface ContactMetadata {
+  timestamp: number
+  userAgent: string
+  language: string
+  screenResolution: string
+  timezone: string
+  platform: string
+  referrer: string
+  location?: {
+    country?: string
+    region?: string
+    city?: string
+  }
 }
 
 export interface Contact {
@@ -13,22 +22,15 @@ export interface Contact {
   phone?: string
   message: string
   status: 'new' | 'in-progress' | 'completed'
-  createdAt: Timestamp
-  lastUpdated: Timestamp
-  notes: Note[]
-  source?: string
-  metadata?: {
-    timestamp: number
-    userAgent: string
-    language: string
-    screenResolution: string
-    timezone: string
-    platform: string
-    referrer: string
-    location?: {
-      country?: string
-      region?: string
-      city?: string
+  timestamp?: Date | string
+  metadata?: ContactMetadata
+  notes?: Array<{
+    id: string
+    content: string
+    timestamp: string
+    author?: {
+      name?: string
+      email: string
     }
-  }
+  }>
 } 

@@ -46,4 +46,56 @@ export function useUpdateContactStatus() {
       queryClient.invalidateQueries({ queryKey: ['contacts'] })
     }
   })
+}
+
+export function useDeleteContact() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: async (contactId: string) => {
+      const response = await fetch(`/api/admin/contacts/${contactId}`, {
+        method: 'DELETE',
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete contact')
+      }
+      
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contacts'] })
+    }
+  })
+}
+
+export function useAddNote() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: async ({ 
+      contactId, 
+      content 
+    }: { 
+      contactId: string
+      content: string
+    }) => {
+      const response = await fetch(`/api/admin/contacts/${contactId}/notes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to add note')
+      }
+      
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contacts'] })
+    }
+  })
 } 
