@@ -39,16 +39,6 @@ const defaultContent = `
   </p>
 `
 
-function formatDescription(text: string) {
-  return text.split('\n').map((paragraph, index) => (
-    paragraph.trim() && (
-      <p key={index} className="text-neutral-600">
-        {paragraph}
-      </p>
-    )
-  ));
-}
-
 export function AboutContent({ initialData }: AboutContentProps) {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
   const content = initialData.content || defaultContent
@@ -72,27 +62,25 @@ export function AboutContent({ initialData }: AboutContentProps) {
 
       {/* Team Section */}
       <section className="container mx-auto px-4">
-        <h2 className="font-heading text-3xl mb-12 text-center">Our Team</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+        <h2 className="text-4xl font-bold text-center mb-16 text-black">Our Team</h2>
+        <div className="grid md:grid-cols-2 gap-x-12 gap-y-16 max-w-7xl mx-auto">
           {initialData.team.map(member => (
-            <div 
-              key={member.id}
-              className="group cursor-pointer"
-              onClick={() => setSelectedMember(member)}
-            >
-              <div className="relative aspect-square overflow-hidden rounded-lg mb-4">
-                <Image
-                  src={member.photo || '/images/placeholder-profile.jpg'}
-                  alt={member.name}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              </div>
-              <h3 className="font-heading text-xl mb-1">{member.name}</h3>
-              <p className="text-neutral-600">{member.role}</p>
-              <div className="space-y-2">
-                {formatDescription(member.description)}
+            <div key={member.id} className="flex flex-col items-center bg-white p-8">
+              {member.photo && (
+                <div className="relative w-48 h-48 mb-6">
+                  <Image
+                    src={member.photo}
+                    alt={member.name}
+                    fill
+                    className="rounded-full object-cover border-4 border-black shadow-lg"
+                    sizes="(max-width: 768px) 192px, 192px"
+                  />
+                </div>
+              )}
+              <h3 className="text-2xl font-bold text-black mb-2">{member.name}</h3>
+              <p className="text-black font-medium mb-6">{member.role}</p>
+              <div className="text-black text-left whitespace-pre-wrap leading-relaxed">
+                {member.description}
               </div>
             </div>
           ))}
@@ -117,7 +105,7 @@ export function AboutContent({ initialData }: AboutContentProps) {
           </div>
           <h3 className="font-heading text-xl">{selectedMember?.role}</h3>
           <div className="space-y-2">
-            {formatDescription(selectedMember?.description || '')}
+            {selectedMember?.description}
           </div>
         </div>
       </Dialog>
