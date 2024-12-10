@@ -55,6 +55,19 @@ Assistant: "No problem! Could you tell me more about your farm website project? 
 
 Keep the conversation natural and friendly. After collecting the required information (name, email, project details), inform them that someone from the team will be in touch soon.`
 
+// Add cache control headers helper
+function addCacheHeaders(response: Response): Response {
+  // Clone the response to modify headers
+  const responseWithHeaders = new Response(response.body, response);
+  
+  // Add cache control headers
+  responseWithHeaders.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  responseWithHeaders.headers.set('Expires', '0');
+  responseWithHeaders.headers.set('Pragma', 'no-cache');
+
+  return responseWithHeaders;
+}
+
 export async function POST(req: Request) {
   try {
     const { message, chatId, messages, contactInfo } = await req.json()
@@ -82,17 +95,17 @@ export async function POST(req: Request) {
           throw new Error(`Failed to submit contact: ${JSON.stringify(responseData)}`)
         }
 
-        return Response.json({
+        return addCacheHeaders(Response.json({
           message: "Thanks! I've submitted your contact information and someone from our team will be in touch soon via email. Is there anything else you'd like to know about our services?",
           contactSubmitted: true
-        })
+        }))
       } catch (error) {
         console.error('Failed to submit contact:', error)
-        return Response.json({
+        return addCacheHeaders(Response.json({
           message: "I apologize, but there was an error submitting your contact information. Could you please try again?",
           error: error instanceof Error ? error.message : 'Unknown error',
           contactSubmitted: false
-        })
+        }))
       }
     }
 
@@ -152,12 +165,12 @@ export async function POST(req: Request) {
       })
     }
 
-    return Response.json({
+    return addCacheHeaders(Response.json({
       message: aiResponse,
       contactInfo: updatedContactInfo
-    })
+    }))
   } catch (error) {
     console.error('Chat error:', error)
-    return Response.json({ error: 'Failed to process chat message' }, { status: 500 })
+    return addCacheHeaders(Response.json({ error: 'Failed to process chat message' }, { status: 500 }))
   }
 } 
