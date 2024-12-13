@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
 
@@ -18,13 +18,13 @@ export function PageWithFlow({
 }: PageWithFlowProps) {
   const pathname = usePathname()
   const { showFlow } = useDreamtimeFlow()
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const opacityValue = Math.round(opacity * 100)
-      const className = `absolute inset-0 w-full h-full opacity-${opacityValue}`
-      showFlow(className)
-    }
+    setIsMounted(true)
+    const opacityValue = Math.round(opacity * 100)
+    const className = `absolute inset-0 w-full h-full opacity-${opacityValue}`
+    showFlow(className)
   }, [showFlow, opacity, pathname])
 
   return (
@@ -32,6 +32,11 @@ export function PageWithFlow({
       <div className="relative z-10">
         {children}
       </div>
+      {isMounted && (
+        <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-8">
+          <div className="relative z-10 cursor-pointer opacity-0" />
+        </div>
+      )}
     </div>
   )
 }
