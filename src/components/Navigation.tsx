@@ -15,20 +15,34 @@ const links = [
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const [hasScrolled, setHasScrolled] = useState(false)
 
   useEffect(() => {
-    console.log('Navigation: isOpen state changed to:', isOpen)
-  }, [isOpen])
+    const handleScroll = () => {
+      setHasScrolled(window.scrollY > 0)
+    }
+
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <>
-      <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm">
+    <div className="relative">
+      <header 
+        className={`fixed w-full z-40 transition-colors duration-200
+          ${hasScrolled ? 'bg-white/80 backdrop-blur-sm' : 'bg-transparent'}`}
+      >
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-1.5">
             <IndigenousFigure className="w-12 h-12 text-ochre-500" />
             <div className="flex flex-col">
-              <span className="text-[1.7rem] leading-none">Digital</span>
-              <span className="text-[1.7rem] font-bold leading-none">Dingo</span>
+              <span className="text-[1.7rem] leading-none text-neutral-900">
+                Digital
+              </span>
+              <span className="text-[1.7rem] font-bold leading-none text-neutral-900">
+                Dingo
+              </span>
             </div>
           </Link>
 
@@ -38,7 +52,7 @@ function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-medium text-neutral-800 hover:text-primary-ochre transition-colors"
+                className="font-medium text-neutral-900 hover:text-primary-ochre transition-colors"
               >
                 {link.label}
               </Link>
@@ -48,21 +62,18 @@ function Navigation() {
           {/* Mobile Menu Button */}
           <button
             type="button"
-            onClick={() => {
-              console.log('Navigation: Button clicked, current state:', isOpen)
-              setIsOpen(!isOpen)
-            }}
+            onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-4"
             aria-expanded={isOpen}
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X className="w-8 h-8" />
+              <X className="w-8 h-8 text-neutral-900" />
             ) : (
               <div className="w-8 h-8 flex flex-col justify-around">
-                <span className="block w-8 h-0.5 bg-black" />
-                <span className="block w-8 h-0.5 bg-black" />
-                <span className="block w-8 h-0.5 bg-black" />
+                <span className="block w-8 h-0.5 bg-neutral-900" />
+                <span className="block w-8 h-0.5 bg-neutral-900" />
+                <span className="block w-8 h-0.5 bg-neutral-900" />
               </div>
             )}
           </button>
@@ -71,13 +82,10 @@ function Navigation() {
 
       <MobileMenu 
         isOpen={isOpen}
-        onClose={() => {
-          console.log('Navigation: onClose called')
-          setIsOpen(false)
-        }}
+        onClose={() => setIsOpen(false)}
         links={links}
       />
-    </>
+    </div>
   )
 }
 
