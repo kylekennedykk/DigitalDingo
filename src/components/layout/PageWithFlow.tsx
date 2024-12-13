@@ -7,14 +7,21 @@ import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
 interface PageWithFlowProps {
   children: React.ReactNode
   opacity?: number
+  variant?: 'dark' | 'light'
 }
 
-export function PageWithFlow({ children, opacity = 0.8 }: PageWithFlowProps) {
+export function PageWithFlow({ 
+  children, 
+  opacity = 0.8,
+  variant = 'light' 
+}: PageWithFlowProps) {
   const pathname = usePathname()
   const { showFlow } = useDreamtimeFlow()
 
   useEffect(() => {
-    showFlow(`absolute inset-0 w-full h-full opacity-${opacity * 100}`)
+    const opacityValue = Math.round(opacity * 100)
+    const className = `absolute inset-0 w-full h-full opacity-${opacityValue}`
+    showFlow(className)
   }, [showFlow, opacity, pathname])
 
   return (
@@ -24,4 +31,4 @@ export function PageWithFlow({ children, opacity = 0.8 }: PageWithFlowProps) {
       </div>
     </div>
   )
-} 
+}
