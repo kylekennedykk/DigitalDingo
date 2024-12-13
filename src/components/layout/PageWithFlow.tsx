@@ -32,11 +32,6 @@ export function PageWithFlow({
       <div className="relative z-10">
         {children}
       </div>
-      {isMounted && (
-        <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-8">
-          <div className="relative z-10 cursor-pointer opacity-0" />
-        </div>
-      )}
     </div>
   )
 }
