@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useEffect } from 'react'
@@ -19,9 +20,11 @@ export function PageWithFlow({
   const { showFlow } = useDreamtimeFlow()
 
   useEffect(() => {
-    const opacityValue = Math.round(opacity * 100)
-    const className = `absolute inset-0 w-full h-full opacity-${opacityValue}`
-    showFlow(className)
+    if (typeof window !== 'undefined') {
+      const opacityValue = Math.round(opacity * 100)
+      const className = `absolute inset-0 w-full h-full opacity-${opacityValue}`
+      showFlow(className)
+    }
   }, [showFlow, opacity, pathname])
 
   return (
