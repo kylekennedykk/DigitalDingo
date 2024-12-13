@@ -8,7 +8,8 @@ const AIChatBox = dynamic(() => import('@/components/AIChatBox').then(mod => mod
 })
 
 const Navigation = dynamic(() => import('@/components/Navigation').then(mod => mod.Navigation), {
-  loading: () => <div className="h-16 bg-gray-100 animate-pulse" />
+  loading: () => <div className="h-16 bg-gray-100 animate-pulse" />,
+  ssr: false
 })
 
 const Footer = dynamic(() => import('@/components/Footer').then(mod => mod.Footer), {
