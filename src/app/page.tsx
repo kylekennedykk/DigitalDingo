@@ -107,56 +107,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-
-          {/* Scroll Indicator */}
-          <motion.div
-            className="relative z-10 flex justify-center mb-8 cursor-pointer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            onClick={() => {
-              window.scrollTo({
-                top: window.innerHeight,
-                behavior: 'smooth'
-              })
-            }}
-          >
-            <div className="flex flex-col items-center gap-2.5">
-              {/* Pill with chevrons */}
-              <div className="relative bg-black rounded-full w-9 h-12 flex flex-col items-center justify-center gap-0">
-                {[0, 1, 2, 3].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-3.5 h-2.5"
-                    initial={{ opacity: 0.2 }}
-                    animate={{ opacity: [0.2, 0.6, 0.2] }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      delay: i * 0.15,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <svg 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="white" 
-                      strokeWidth="3"
-                      className="w-full h-full"
-                    >
-                      <path 
-                        d="M4 9l8 8 8-8" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </motion.div>
-                ))}
-              </div>
-              {/* Dot */}
-              <div className="w-1.5 h-1.5 rounded-full bg-black" />
-            </div>
-          </motion.div>
         </div>
       </section>
 
