@@ -13,7 +13,11 @@ if (!getApps().length) {
 }
 
 export const setAdminClaim = async (uid: string) => {
-  const auth = getAuth();
-  await auth.setCustomUserClaims(uid, { admin: true });
-  return true;
+  try {
+    await getAuth().setCustomUserClaims(uid, { admin: true });
+    return true;
+  } catch (error) {
+    console.error('Error setting admin claim:', error);
+    return false;
+  }
 }; 

@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Upload, X } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
+import Image from 'next/image'
 
 interface ImageUploadProps {
   value: string
@@ -53,9 +54,11 @@ export default function ImageUpload({ value, onChange, aspect = 16/9 }: ImageUpl
 
       {value && (
         <div className="relative aspect-video">
-          <img
+          <Image
             src={value}
             alt="Uploaded image"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="w-full h-full object-cover rounded-lg"
           />
           <button

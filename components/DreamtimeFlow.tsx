@@ -243,6 +243,8 @@ export default memo(function DreamtimeFlow({
 
   useEffect(() => {
     const currentMountCount = mountCount.current;
+    const currentContainer = containerRef.current;
+    
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisibleRef.current = entry.isIntersecting;
@@ -250,8 +252,8 @@ export default memo(function DreamtimeFlow({
       { threshold: 0 }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+    if (currentContainer) {
+      observer.observe(currentContainer);
     }
 
     return () => {

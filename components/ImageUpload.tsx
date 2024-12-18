@@ -128,6 +128,16 @@ export function ImageUpload({ currentImage, onUpload, folder }: ImageUploadProps
     }
   }
 
+  const currentRef = imageRef.current;
+
+  useEffect(() => {
+    return () => {
+      if (currentRef) {
+        // cleanup code
+      }
+    };
+  }, [currentRef]);
+
   return (
     <div className="space-y-4">
       {currentImage && !tempImage && (

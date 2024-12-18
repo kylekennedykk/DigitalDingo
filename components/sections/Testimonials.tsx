@@ -81,7 +81,7 @@ export default function Testimonials({ content, settings }: TestimonialsProps) {
                 ))}
               </div>
               <blockquote className="text-center mb-4">
-                "{testimonial.content}"
+                &ldquo;{testimonial.content}&rdquo;
               </blockquote>
               <div className="text-center">
                 <div className="font-medium">{testimonial.author}</div>
