@@ -3,11 +3,11 @@ import { adminDb } from '@/lib/firebase/admin'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { contactId: string } }
+  context: { params: { contactId: string } }
 ): Promise<NextResponse> {
   try {
     const { note } = await request.json()
-    const contactId = params.contactId
+    const contactId = context.params.contactId
 
     if (!note || !contactId) {
       return NextResponse.json(
