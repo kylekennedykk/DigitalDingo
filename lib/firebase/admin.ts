@@ -1,6 +1,7 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import { getFirestore } from 'firebase-admin/firestore'
+import { auth } from 'firebase-admin';
 
 const adminConfig = {
   credential: cert({
@@ -17,5 +18,15 @@ export const adminApp = getApps().length === 0
 
 export const adminAuth = getAuth(adminApp)
 export const adminDb = getFirestore(adminApp)
+
+export const setAdminClaim = async (uid: string, isAdmin: boolean) => {
+  try {
+    await auth().setCustomUserClaims(uid, { admin: isAdmin });
+    return { success: true };
+  } catch (error) {
+    console.error('Error setting admin claim:', error);
+    return { success: false, error };
+  }
+};
 
 export default adminApp

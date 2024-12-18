@@ -164,7 +164,7 @@ export function ImageUpload({ currentImage, onUpload, folder }: ImageUploadProps
             minWidth={200}
             className="max-w-md mx-auto"
           >
-            <img
+            <Image
               ref={imageRef}
               src={tempImage}
               alt="Crop preview"
