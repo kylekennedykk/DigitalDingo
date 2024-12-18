@@ -12,8 +12,8 @@ import TeamSection from '@/components/sections/Team'
 import HoursSection from '@/components/sections/Hours'
 import LocationSection from '@/components/sections/Location'
 import FaqSection from '@/components/sections/Faq'
+import ClientStyledWrapper from '@/components/ClientStyledWrapper'
 
-// Generate static params for all published sites
 export async function generateStaticParams() {
   const db = getFirestore(app)
   const sitesSnapshot = await db
@@ -29,7 +29,6 @@ export async function generateStaticParams() {
 async function getSite(slug: string): Promise<PortfolioSite | null> {
   const db = getFirestore(app)
   
-  // Get the site document
   const siteSnapshot = await db
     .collection('portfolio-sites')
     .where('slug', '==', slug)
@@ -42,7 +41,6 @@ async function getSite(slug: string): Promise<PortfolioSite | null> {
   const siteDoc = siteSnapshot.docs[0]
   const siteData = siteDoc.data()
 
-  // Get the site's sections
   const sectionsSnapshot = await db
     .collection('portfolio-sites')
     .doc(siteDoc.id)
@@ -62,13 +60,9 @@ async function getSite(slug: string): Promise<PortfolioSite | null> {
   } as PortfolioSite
 }
 
-export default async function PortfolioSitePage({
-  params
-}: {
-  params: { slug: string }
-}) {
+export default async function PortfolioSitePage({ params }: { params: { slug: string } }) {
   const site = await getSite(params.slug)
-  
+
   if (!site) {
     notFound()
   }
@@ -76,35 +70,7 @@ export default async function PortfolioSitePage({
   const theme = themes[site.theme || 'default']
 
   return (
-    <div style={{ 
-      backgroundColor: theme.colors.background,
-      color: theme.colors.text,
-      fontFamily: theme.fonts.body
-    }}>
-      <style jsx global>{`
-        .font-heading {
-          font-family: ${theme.fonts.heading}, system-ui;
-        }
-        .text-primary {
-          color: ${theme.colors.primary};
-        }
-        .bg-primary {
-          background-color: ${theme.colors.primary};
-        }
-        .text-secondary {
-          color: ${theme.colors.secondary};
-        }
-        .bg-secondary {
-          background-color: ${theme.colors.secondary};
-        }
-        .text-accent {
-          color: ${theme.colors.accent};
-        }
-        .bg-accent {
-          background-color: ${theme.colors.accent};
-        }
-      `}</style>
-
+    <ClientStyledWrapper theme={theme}>
       {site.sections.map((section) => {
         switch (section.type) {
           case 'hero':
@@ -129,14 +95,13 @@ export default async function PortfolioSitePage({
             return null
         }
       })}
-    </div>
+    </ClientStyledWrapper>
   )
 }
 
-// Add metadata generation
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const site = await getSite(params.slug)
-  
+
   if (!site) {
     return {
       title: 'Site Not Found | DigitalDingo Portfolio',
@@ -154,4 +119,4 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       type: 'website',
     },
   }
-} 
+}

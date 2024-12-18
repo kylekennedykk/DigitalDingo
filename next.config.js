@@ -1,8 +1,11 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  devIndicators: {
+    buildActivity: false,
+    buildActivityPosition: 'bottom-right',
+  },
   images: {
     domains: ['firebasestorage.googleapis.com', 'digitaldingo.uk'],
     remotePatterns: [
