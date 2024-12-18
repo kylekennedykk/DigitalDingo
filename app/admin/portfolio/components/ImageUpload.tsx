@@ -13,9 +13,13 @@ interface ImageUploadProps {
 export default function ImageUpload({ value, onChange, aspect = 16/9 }: ImageUploadProps) {
   const [loading, setLoading] = useState(false)
 
+  const handleUpload = useCallback((file: File) => {
+    onChange(file);
+  }, []);
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     // Handle file upload logic here
-  }, [onChange])
+  }, [handleUpload])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

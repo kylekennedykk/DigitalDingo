@@ -8,7 +8,7 @@ export function HeroSection() {
 
   useEffect(() => {
     showFlow('fixed inset-0 -z-10')
-  }, [])
+  }, [showFlow])
 
   return (
     <section>

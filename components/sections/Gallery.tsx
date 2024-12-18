@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import type { Section } from '@/types/portfolio'
+import Image from 'next/image'
 
 interface GalleryProps {
   content: Section['content']
@@ -53,7 +54,7 @@ export default function Gallery({ content, settings }: GalleryProps) {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
             >
-              <img
+              <Image
                 src={image}
                 alt=""
                 className="w-full h-full object-cover rounded-lg"

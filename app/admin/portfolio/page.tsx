@@ -48,8 +48,8 @@ export default function PortfolioPage() {
   }
 
   useEffect(() => {
-    loadItems(true)
-  }, [])
+    loadItems();
+  }, [loadItems]);
 
   const handleLoadMore = () => {
     if (hasMore && !loading) {
