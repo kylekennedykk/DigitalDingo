@@ -81,13 +81,29 @@ export default memo(function DreamtimeFlow({
   const mountCount = useRef(0)
   
   useEffect(() => {
-    mountCount.current++
-    console.log(`DreamtimeFlow mount #${mountCount.current}`, { className })
+    const currentMountCount = mountCount.current;
+    mountCount.current++;
     
-    return () => {
-      console.log(`DreamtimeFlow unmount #${mountCount.current}`)
+    console.log(`DreamtimeFlow mount #${currentMountCount}`, { className });
+    
+    // Create intersection observer
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
     }
-  }, [className])
+
+    return () => {
+      // Use the stored value in cleanup
+      console.log(`DreamtimeFlow unmount #${currentMountCount}`);
+      observer.disconnect();
+    };
+  }, [className]);
 
   const containerRef = useRef<HTMLDivElement>(null)
   const mouseRef = useRef({ x: 0, y: 0 })
@@ -213,26 +229,33 @@ export default memo(function DreamtimeFlow({
 
       frameRef.current = requestAnimationFrame(animate)
 
+      // Store current refs for cleanup
+      const currentFrame = frameRef;
+      const currentRenderer = renderer;
+      const currentMaterial = materialRef.current;
+      const currentGeometry = geometryRef.current;
+      const currentMesh = meshRef.current;
+
       // Cleanup
       return () => {
         console.log('Cleaning up scene')
-        if (frameRef.current) {
-          cancelAnimationFrame(frameRef.current)
+        if (currentFrame.current) {
+          cancelAnimationFrame(currentFrame.current)
         }
         resizeObserver.disconnect()
         window.removeEventListener('mousemove', handleMouseMove)
         
-        if (renderer) {
-          renderer.dispose()
-          renderer.forceContextLoss()
-          renderer.domElement.remove()
+        if (currentRenderer) {
+          currentRenderer.dispose()
+          currentRenderer.forceContextLoss()
+          currentRenderer.domElement.remove()
         }
-        if (material) material.dispose()
-        if (geometry) geometry.dispose()
-        if (mesh) {
-          mesh.geometry.dispose()
-          if (mesh.material instanceof THREE.Material) {
-            mesh.material.dispose()
+        if (currentMaterial) currentMaterial.dispose()
+        if (currentGeometry) currentGeometry.dispose()
+        if (currentMesh) {
+          currentMesh.geometry.dispose()
+          if (currentMesh.material instanceof THREE.Material) {
+            currentMesh.material.dispose()
           }
         }
       }
@@ -240,28 +263,6 @@ export default memo(function DreamtimeFlow({
       console.error('DreamtimeFlow initialization failed:', error)
     }
   }, [uniforms, initScene])
-
-  useEffect(() => {
-    const currentMountCount = mountCount.current;
-    const currentContainer = containerRef.current;
-    
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisibleRef.current = entry.isIntersecting;
-      },
-      { threshold: 0 }
-    );
-
-    if (currentContainer) {
-      observer.observe(currentContainer);
-    }
-
-    return () => {
-      if (currentMountCount === mountCount.current) {
-        observer.disconnect();
-      }
-    };
-  }, []);
 
   return (
     <div
