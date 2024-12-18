@@ -14,12 +14,18 @@ export default function ImageUpload({ value, onChange, aspect = 16/9 }: ImageUpl
   const [loading, setLoading] = useState(false)
 
   const handleUpload = useCallback((file: File) => {
-    onChange(file);
-  }, []);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      onChange(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  }, [onChange]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    // Handle file upload logic here
-  }, [handleUpload])
+    if (acceptedFiles.length > 0) {
+      handleUpload(acceptedFiles[0]);
+    }
+  }, [handleUpload]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

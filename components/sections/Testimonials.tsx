@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
 import type { Section } from '@/types/portfolio'
+import Image from 'next/image';
 
 interface TestimonialsProps {
   content: Section['content']
@@ -63,9 +64,11 @@ export default function Testimonials({ content, settings }: TestimonialsProps) {
               transition={{ delay: index * 0.1 }}
             >
               {testimonial.image && (
-                <img
+                <Image
                   src={testimonial.image}
                   alt={testimonial.author}
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full object-cover mx-auto mb-4"
                 />
               )}

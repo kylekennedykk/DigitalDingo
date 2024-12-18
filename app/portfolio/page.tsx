@@ -15,6 +15,7 @@ import {
   QueryDocumentSnapshot 
 } from '@firebase/firestore'
 import { ref, getDownloadURL } from '@firebase/storage'
+import Image from 'next/image';
 
 interface PortfolioItem {
   id: string
@@ -140,8 +141,7 @@ export default function PortfolioPage() {
                   Showcasing our finest digital creations
                 </p>
                 <p className="text-base md:text-lg max-w-3xl mx-auto text-black">
-                  Explore our collection of successful projects where creativity meets functionality. 
-                  Each project represents our commitment to delivering exceptional digital experiences.
+                  Here&apos;s what we&apos;ve been working on. Each project represents our commitment to excellence and innovation.
                 </p>
               </motion.div>
             </div>
@@ -167,9 +167,11 @@ export default function PortfolioPage() {
                     transform hover:-translate-y-1"
                 >
                   <div className="aspect-video w-full overflow-hidden">
-                    <img 
+                    <Image 
                       src={item.thumbnail} 
                       alt={item.title}
+                      width={800}
+                      height={600}
                       className="w-full h-full object-cover transition-transform duration-300 
                         group-hover:scale-105"
                       onError={(e) => {
@@ -214,12 +216,10 @@ export default function PortfolioPage() {
           >
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="font-heading text-4xl md:text-6xl mb-8">
-                Ready to Start Your 
-                <span className="text-white"> Journey?</span>
+                Let&apos;s create something extraordinary together.
               </h2>
               <p className="text-xl mb-12 text-neutral-300">
-                Let's create something extraordinary together. Contact us today to discuss
-                your project and discover how we can help bring your vision to life.
+                Contact us today to discuss your project and discover how we can help bring your vision to life.
               </p>
               <Link
                 href="/contact"

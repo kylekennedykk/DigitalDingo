@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { PageWithFlow } from '@/components/layout/PageWithFlow'
 import { db } from '@/lib/firebase'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
+import Image from 'next/image';
 
 interface AboutContent {
   mainText: string
@@ -99,10 +100,12 @@ export default function AboutPage() {
                 >
                   {member.imageUrl && (
                     <div className="mb-6">
-                      <img
+                      <Image
                         src={member.imageUrl}
                         alt={member.name}
-                        className="w-48 h-48 rounded-full object-cover border-4 border-black shadow-lg"
+                        width={400}
+                        height={300}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   )}

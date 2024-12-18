@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { X, Check, Loader2 } from 'lucide-react'
 import ReactCrop, { Crop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
+import Image from 'next/image';
 
 interface ImageCropperProps {
   image: string
@@ -104,11 +105,12 @@ export default function ImageCropper({
             aspect={aspect}
             className="max-h-[60vh] mx-auto"
           >
-            <img
-              ref={imageRef}
+            <Image
               src={image}
-              alt="Crop preview"
-              className="max-w-full max-h-[60vh] mx-auto"
+              alt="Preview"
+              width={800}
+              height={600}
+              className="max-w-full h-auto"
             />
           </ReactCrop>
         </div>

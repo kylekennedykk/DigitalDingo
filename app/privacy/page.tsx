@@ -21,7 +21,7 @@ export default function PrivacyPage() {
 
             <h2>1. Introduction</h2>
             <p>
-              DigitalDingo ("we," "our," or "us") respects your privacy and is committed to protecting your personal data. 
+              DigitalDingo (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) respects your privacy and is committed to protecting your personal data. 
               This privacy policy explains how we collect, use, and protect your personal information when you use our website 
               (digitaldingo.uk) and services.
             </p>

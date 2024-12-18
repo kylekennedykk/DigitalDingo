@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Linkedin, Twitter, Mail } from 'lucide-react'
 import type { Section } from '@/types/portfolio'
+import Image from 'next/image';
 
 interface TeamProps {
   content: Section['content']
@@ -68,9 +69,11 @@ export default function Team({ content, settings }: TeamProps) {
             >
               {member.image && (
                 <div className="mb-4">
-                  <img
+                  <Image
                     src={member.image}
                     alt={member.name}
+                    width={192}
+                    height={192}
                     className="w-48 h-48 rounded-full object-cover mx-auto"
                   />
                 </div>

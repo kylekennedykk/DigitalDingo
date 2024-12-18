@@ -21,8 +21,7 @@ export default function TermsPage() {
 
             <h2>1. Agreement to Terms</h2>
             <p>
-              By accessing and using Digital Dingo's website and services, you agree to be bound by these Terms of Service. 
-              If you disagree with any part of these terms, you may not access our services.
+              By accessing and using DigitalDingo&apos;s website and services, you agree to comply with and be bound by these Terms and Conditions (&ldquo;Terms&rdquo;).
             </p>
 
             <h2>2. Services</h2>
@@ -70,8 +69,7 @@ export default function TermsPage() {
 
             <h2>9. Changes to Terms</h2>
             <p>
-              We reserve the right to modify these terms at any time. We will notify users of any material changes via 
-              email or through our website.
+              We reserve the right to modify these Terms at any time. You&apos;re responsible for reviewing these Terms periodically for changes.
             </p>
 
             <h2>10. Contact Information</h2>

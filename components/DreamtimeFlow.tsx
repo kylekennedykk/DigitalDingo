@@ -242,20 +242,24 @@ export default memo(function DreamtimeFlow({
   }, [uniforms, initScene])
 
   useEffect(() => {
+    const currentMountCount = mountCount.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        isVisibleRef.current = entry.isIntersecting
-        console.log('DreamtimeFlow visibility:', entry.isIntersecting)
+        isVisibleRef.current = entry.isIntersecting;
       },
       { threshold: 0 }
-    )
+    );
 
     if (containerRef.current) {
-      observer.observe(containerRef.current)
+      observer.observe(containerRef.current);
     }
 
-    return () => observer.disconnect()
-  }, [])
+    return () => {
+      if (currentMountCount === mountCount.current) {
+        observer.disconnect();
+      }
+    };
+  }, []);
 
   return (
     <div

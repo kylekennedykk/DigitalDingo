@@ -77,7 +77,7 @@ export default function HomePage() {
                 <span className="text-primary-red">Dingo</span>
               </h1>
               <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-neutral-800 animate-slide-up">
-                Creating stunning, high-performance websites tailored to your unique vision
+                We&apos;re not just another digital agency. We&apos;re your partner in creating exceptional digital experiences that captivate and convert.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
                 <Link
@@ -272,12 +272,12 @@ export default function HomePage() {
         >
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-heading text-4xl md:text-6xl mb-8">
-              Ready to Start Your 
-              <span className="text-white"> Journey?</span>
+              Ready to Start Your&nbsp;
+              <span className="text-white">Journey?</span>
             </h2>
             <p className="text-xl mb-12 text-neutral-300">
-              Let's create something extraordinary together. From concept to launch,
-              we'll bring your digital vision to life with precision and creativity.
+              Let&apos;s transform your digital presence into something extraordinary. From concept to launch,
+              we&apos;ll bring your digital vision to life with precision and creativity.
             </p>
             <Link
               href="/contact"

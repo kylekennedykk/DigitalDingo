@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { VirtualList } from '@/components/ui/VirtualList'
 import { db } from '@/lib/firebase'
 import { collection, query, orderBy, limit, getDocs, startAfter } from 'firebase/firestore'
@@ -14,7 +14,7 @@ export default function PortfolioPage() {
   const [lastDoc, setLastDoc] = useState<any>(null)
   const [hasMore, setHasMore] = useState(true)
 
-  const loadItems = async (isInitial = false) => {
+  const loadItems = useCallback(async (isInitial = false) => {
     try {
       let q = query(
         collection(db, 'portfolio-sites'),
@@ -45,10 +45,10 @@ export default function PortfolioPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [lastDoc]);
 
   useEffect(() => {
-    loadItems();
+    loadItems(true);
   }, [loadItems]);
 
   const handleLoadMore = () => {
