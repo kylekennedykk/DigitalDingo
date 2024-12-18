@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
+import { useDreamtimeFlow } from '../lib/contexts/DreamtimeFlowContext'
 import Link from 'next/link'
 import { motion, Variants } from 'framer-motion'
 import { 
@@ -17,9 +17,9 @@ import {
   BarChart3,
   Wrench
 } from 'lucide-react'
-import { GradientCard } from '@/components/GradientCard'
+import { GradientCard } from '../components/GradientCard'
 import Image from 'next/image'
-import { PageWithFlow } from '@/components/layout/PageWithFlow'
+import { PageWithFlow } from '../components/layout/PageWithFlow'
 import dynamic from 'next/dynamic'
 
 const fadeIn: Variants = {
@@ -53,7 +53,7 @@ const container: Variants = {
 }
 
 const LatestProjects = dynamic(
-  () => import('@/components/LatestProjects').then(mod => mod.LatestProjects),
+  () => import('../components/LatestProjects').then(mod => mod.LatestProjects),
   {
     loading: () => <div className="h-[600px]" />
   })

@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, memo, useMemo, useCallback } from 'react'
 import * as THREE from 'three'
-import { theme } from '@/lib/theme'
-import { cn } from '@/lib/utils'
+import { theme } from '../lib/theme'
+import { cn } from '../lib/utils'
 import throttle from 'lodash/throttle'
-import { deferredExecution, measurePerformance } from '@/lib/utils/performance'
 
 // Move shader code outside component to prevent recreation
 const vertexShader = `
@@ -72,7 +71,7 @@ class DreamtimeFlowError extends Error {
   }
 }
 
-export const DreamtimeFlow = memo(function DreamtimeFlow({ 
+export default memo(function DreamtimeFlow({ 
   className, 
   scale = 1 
 }: {
@@ -175,7 +174,7 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
         camera.updateProjectionMatrix()
         renderer.setSize(clientWidth, clientHeight)
         uniforms.resolution.value.set(clientWidth, clientHeight)
-      }, 100) // Throttle to 100ms
+      }, 100)
 
       const resizeObserver = new ResizeObserver(handleResize)
 
@@ -239,9 +238,8 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
       }
     } catch (error) {
       console.error('DreamtimeFlow initialization failed:', error)
-      // You might want to report this error to your error tracking service
     }
-  }, [uniforms, initScene]) // Add initScene to dependencies
+  }, [uniforms, initScene])
 
   useEffect(() => {
     const observer = new IntersectionObserver(

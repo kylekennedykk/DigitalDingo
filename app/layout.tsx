@@ -7,7 +7,7 @@ import { Metadata } from 'next'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Suspense } from 'react'
 import { LoadingPage } from '@/components/ui/loading-states'
-import { DreamtimeFlowProvider } from '@/lib/contexts/DreamtimeFlowContext'
+import { DreamtimeFlowProvider } from '../lib/contexts/DreamtimeFlowContext'
 
 const inter = Inter({ 
   subsets: ['latin'], 

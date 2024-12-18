@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, ReactNode, useState, useCallback } from 'react'
-import { DreamtimeFlow } from '@/components/DreamtimeFlow'
+import DreamtimeFlow from '../../components/DreamtimeFlow'
 
 interface DreamtimeFlowContextType {
   showFlow: (className: string) => void
@@ -17,6 +17,7 @@ export function DreamtimeFlowProvider({ children }: { children: ReactNode }) {
   const [key, setKey] = useState(0)
 
   const showFlow = useCallback((newClassName: string) => {
+    console.log('showFlow called with:', newClassName)
     setClassName(newClassName)
     setIsVisible(true)
     setKey(prev => prev + 1)
