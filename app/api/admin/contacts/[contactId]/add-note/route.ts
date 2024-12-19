@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/firebase/firebase'
+import { db } from '../../../../src/lib/firebase/firebase'
 import { doc, updateDoc, arrayUnion, Timestamp } from 'firebase/firestore'
 
 interface RouteParams {

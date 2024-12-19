@@ -29,9 +29,6 @@ const nextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: ['0.0.0.0', 'digitaldingo.uk']
-    },
-    turbotrace: {
-      logLevel: 'error'
     }
   },
   async headers() {

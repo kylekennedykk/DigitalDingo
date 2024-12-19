@@ -20,11 +20,13 @@ if (!getApps().length) {
 }
 
 // Initialize Firestore with settings
-export const db = getFirestore()
+const db = getFirestore()
 
 // Configure Firestore settings
-await db.settings({
+db.settings({
   cacheSizeBytes: 50000000, // 50MB cache size
   experimentalForceLongPolling: true,
   experimentalAutoDetectLongPolling: true,
-}) 
+})
+
+export { db } 
