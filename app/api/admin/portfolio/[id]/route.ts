@@ -61,7 +61,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = getFirestore()
     await db.collection('portfolio-sites').doc(params.id).delete()
     
     return NextResponse.json({ status: 'success' })

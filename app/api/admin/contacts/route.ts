@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/firebase-admin'
 import { Timestamp } from 'firebase-admin/firestore'
+import type { Contact } from '@/lib/types'
 
 export async function GET() {
   try {
@@ -11,8 +12,9 @@ export async function GET() {
 
     const contacts = contactsSnapshot.docs.map(doc => ({
       id: doc.id,
+      type: 'contact' as const,
       ...doc.data()
-    }))
+    })) as Contact[]
 
     // Fetch chat contacts
     const chatContactsSnapshot = await db.collection('chatContacts')
@@ -21,8 +23,9 @@ export async function GET() {
 
     const chatContacts = chatContactsSnapshot.docs.map(doc => ({
       id: doc.id,
+      type: 'chatContact' as const,
       ...doc.data()
-    }))
+    })) as Contact[]
 
     // Combine and sort both types of contacts by createdAt
     const allContacts = [...contacts, ...chatContacts]

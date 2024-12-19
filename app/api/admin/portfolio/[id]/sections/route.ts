@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/firebase-admin'
 import type { Section } from '@/types/portfolio'
+import { Timestamp } from 'firebase-admin/firestore'
 
 export async function GET(
   request: Request,
@@ -17,7 +18,7 @@ export async function GET(
     const sections = sectionsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }))
+    })) as Section[]
 
     return NextResponse.json({ sections })
   } catch (error) {
@@ -35,7 +36,6 @@ export async function POST(
 ) {
   try {
     const data = await request.json()
-    const db = getFirestore(app)
     
     // Get the current highest order
     const lastSection = await db
@@ -75,7 +75,7 @@ export async function POST(
 
     // Update the site's updatedAt timestamp
     await db.collection('portfolio-sites').doc(params.id).update({
-      updatedAt: new Date().toISOString()
+      updatedAt: Timestamp.now()
     })
 
     // Get the created section to return
@@ -83,7 +83,7 @@ export async function POST(
     const createdSection = {
       id: sectionDoc.id,
       ...sectionDoc.data()
-    }
+    } as Section
 
     return NextResponse.json(createdSection)
   } catch (error) {
