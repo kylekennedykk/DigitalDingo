@@ -1,28 +1,28 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useDreamtimeFlow } from '../../lib/contexts/DreamtimeFlowContext'
+import { ReactNode } from 'react'
+import DreamtimeFlow from '../DreamtimeFlow'
 
 interface PageWithFlowProps {
-  children: React.ReactNode
-  opacity?: number
+  children: ReactNode
+  className?: string
   variant?: 'dark' | 'light'
+  opacity?: number
 }
 
 export function PageWithFlow({ 
-  children,
-  opacity = 0.8,
-  variant = 'light'
+  children, 
+  className = '',
+  variant = 'light',
+  opacity = 1
 }: PageWithFlowProps) {
-  const { showFlow } = useDreamtimeFlow()
-
-  useEffect(() => {
-    console.log('PageWithFlow mounting, calling showFlow')
-    showFlow('fixed inset-0 -z-10')
-  }, [showFlow])
-
   return (
-    <div className="relative min-h-screen">
+    <div className={`relative min-h-screen ${className}`}>
+      <DreamtimeFlow 
+        className="absolute inset-0 -z-10" 
+        variant={variant}
+        opacity={opacity}
+      />
       <div className="relative z-10">
         {children}
       </div>

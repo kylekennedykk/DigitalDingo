@@ -1,72 +1,30 @@
-import { NextResponse } from 'next/server'
-import { db } from '@/lib/firebase-admin'
-import { Timestamp } from 'firebase-admin/firestore'
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/firebase'
+import { addDoc, collection, doc } from 'firebase/firestore'
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { contactId: string } }
 ) {
   try {
     const { content } = await request.json()
-    
-    if (!content?.trim()) {
+
+    if (!content) {
       return NextResponse.json(
-        { error: 'Content is required' },
+        { error: 'Note content is required' },
         { status: 400 }
       )
     }
 
-    const now = new Date()
-    const timestamp = Timestamp.fromDate(now)
-
-    // Create note
-    const note = {
-      id: crypto.randomUUID(),
-      content: content.trim(),
-      timestamp: {
-        _seconds: timestamp.seconds,
-        _nanoseconds: timestamp.nanoseconds
-      },
-      author: {
-        email: 'admin@digitaldingo.uk',
-        name: 'Admin'
-      }
-    }
-
-    // Try contacts collection first
-    const contactRef = db.collection('contacts').doc(params.contactId)
-    let contact = await contactRef.get()
-
-    if (!contact.exists) {
-      // Try chatContacts if not found in contacts
-      const chatContactRef = db.collection('chatContacts').doc(params.contactId)
-      contact = await chatContactRef.get()
-      
-      if (!contact.exists) {
-        return NextResponse.json(
-          { error: 'Contact not found' },
-          { status: 404 }
-        )
-      }
-
-      // Update chatContacts document
-      await chatContactRef.update({
-        notes: [...(contact.data()?.notes || []), note],
-        lastUpdated: timestamp
-      })
-
-      const updatedContact = await chatContactRef.get()
-      return NextResponse.json(updatedContact.data())
-    }
-
-    // Update contacts document
-    await contactRef.update({
-      notes: [...(contact.data()?.notes || []), note],
-      lastUpdated: timestamp
+    const contactRef = doc(db, 'contacts', params.contactId)
+    const notesCollection = collection(contactRef, 'notes')
+    
+    await addDoc(notesCollection, {
+      content,
+      createdAt: new Date().toISOString(),
     })
 
-    const updatedContact = await contactRef.get()
-    return NextResponse.json(updatedContact.data())
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error adding note:', error)
     return NextResponse.json(

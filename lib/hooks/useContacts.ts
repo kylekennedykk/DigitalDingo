@@ -85,6 +85,7 @@ export function useAddNote() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ content }),
       })
       
