@@ -12,7 +12,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-// Initialize Firebase
 let app: FirebaseApp
 let auth: Auth
 let db: Firestore
@@ -29,7 +28,6 @@ try {
   db = getFirestore(app)
   storage = getStorage(app)
 
-  // Connect to emulators only in development and if FIREBASE_USE_EMULATOR is true
   if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATOR === 'true') {
     console.log('Using Firebase emulators')
     connectAuthEmulator(auth, 'http://127.0.0.1:9099')

@@ -1,12 +1,24 @@
 // components/ClientStyledWrapper.tsx
 "use client";
-export default function ClientStyledWrapper({ children, theme }) {
+
+import { Theme } from '@/types/theme'
+
+interface ClientStyledWrapperProps {
+  theme: Theme
+  children: React.ReactNode
+}
+
+export default function ClientStyledWrapper({ theme, children }: ClientStyledWrapperProps) {
   return (
-    <div style={{
-      backgroundColor: theme.colors.background,
-      color: theme.colors.text,
-      fontFamily: theme.fonts.body
-    }}>
+    <div 
+      className="min-h-screen"
+      style={{
+        backgroundColor: theme.colors.background,
+        color: theme.colors.text,
+        fontFamily: theme.fonts.body
+      }}
+    >
+      {children}
       <style jsx global>{`
         .font-heading {
           font-family: ${theme.fonts.heading}, system-ui;
@@ -29,8 +41,14 @@ export default function ClientStyledWrapper({ children, theme }) {
         .bg-accent {
           background-color: ${theme.colors.accent};
         }
+        :root {
+          --primary-color: ${theme.colors.primary};
+          --secondary-color: ${theme.colors.secondary};
+          --accent-color: ${theme.colors.accent};
+          --background-color: ${theme.colors.background};
+          --text-color: ${theme.colors.text};
+        }
       `}</style>
-      {children}
     </div>
-  );
+  )
 }
