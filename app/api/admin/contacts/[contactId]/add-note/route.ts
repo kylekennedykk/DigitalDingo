@@ -1,33 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { adminDb } from '@/lib/firebase/admin'
+import { db } from '@/lib/firebase/firebase'
+import { doc, updateDoc, arrayUnion, Timestamp } from 'firebase/firestore'
+
+interface RouteParams {
+  params: {
+    contactId: string;
+  }
+}
+
+interface NoteData {
+  note: string;
+}
 
 export async function POST(
   request: NextRequest,
-  context: { params: { contactId: string } }
-): Promise<NextResponse> {
+  { params }: RouteParams
+) {
   try {
-    const { note } = await request.json()
-    const contactId = context.params.contactId
+    const { contactId } = params
+    const { note } = (await request.json()) as NoteData
 
-    if (!note || !contactId) {
+    if (!note) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Note content is required' },
         { status: 400 }
       )
     }
 
-    const noteData = {
-      content: note,
-      createdAt: new Date().toISOString(),
-    }
-
-    await adminDb
-      .collection('contacts')
-      .doc(contactId)
-      .collection('notes')
-      .add(noteData)
+    const contactRef = doc(db, 'contacts', contactId)
+    
+    await updateDoc(contactRef, {
+      notes: arrayUnion({
+        content: note,
+        timestamp: Timestamp.now(),
+      })
+    })
 
     return NextResponse.json({ success: true })
+
   } catch (error) {
     console.error('Error adding note:', error)
     return NextResponse.json(
@@ -37,7 +47,7 @@ export async function POST(
   }
 }
 
-export async function OPTIONS(): Promise<NextResponse> {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
