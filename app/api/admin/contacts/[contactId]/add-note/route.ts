@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/firebase-admin'
+import { db } from '@/src/lib/firebase/admin/db'
 import { Timestamp, FieldValue } from 'firebase-admin/firestore'
 
 type NoteData = {
