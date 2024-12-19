@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/firebase/firebase'
+import { db } from '@/lib/firebase/config'
 import { doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
