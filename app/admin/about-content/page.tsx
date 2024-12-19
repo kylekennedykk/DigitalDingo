@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Loader2, Plus, Pencil, Trash2, Upload } from 'lucide-react'
-import { db, storage } from '@/lib/firebase'
+import { db, storage } from '@/lib/firebase/index'
 import { collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { cn } from '@/lib/utils'

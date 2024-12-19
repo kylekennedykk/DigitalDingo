@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { PageWithFlow } from '@/components/layout/PageWithFlow'
-import { db } from '@/lib/firebase'
+import { db } from '@/lib/firebase/index'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import Image from 'next/image';
+import PageWithFlow from '@/components/layout/PageWithFlow'
 
 interface AboutContent {
   mainText: string

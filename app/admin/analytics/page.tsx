@@ -13,7 +13,7 @@ import {
   ArrowDownRight,
   type LucideIcon
 } from 'lucide-react'
-import { db } from '@/lib/firebase'
+import { db } from '@/lib/firebase/index'
 import { 
   collection, 
   query, 
