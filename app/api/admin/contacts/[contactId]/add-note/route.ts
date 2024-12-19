@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '../../../../src/lib/firebase/firebase'
-import { doc, updateDoc, arrayUnion, Timestamp } from 'firebase/firestore'
+import { db } from '@/lib/firebase-admin'
+import { Timestamp, FieldValue } from 'firebase-admin/firestore'
 
 interface RouteParams {
   params: {
@@ -27,10 +27,10 @@ export async function POST(
       )
     }
 
-    const contactRef = doc(db, 'contacts', contactId)
+    const contactRef = db.collection('contacts').doc(contactId)
     
-    await updateDoc(contactRef, {
-      notes: arrayUnion({
+    await contactRef.update({
+      notes: FieldValue.arrayUnion({
         content: note,
         timestamp: Timestamp.now(),
       })

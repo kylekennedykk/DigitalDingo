@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
-import { getFirestore } from 'firebase-admin/firestore'
-import { adminApp } from '@/lib/firebase/admin'
+import { db } from '@/lib/firebase-admin'
+import { Timestamp } from 'firebase-admin/firestore'
 import type { PortfolioSite } from '@/types/portfolio'
 
 export async function GET() {
   try {
-    const db = getFirestore()
     const sitesSnapshot = await db.collection('portfolio-sites')
       .orderBy('updatedAt', 'desc')
       .get()
@@ -28,7 +27,6 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json()
-    const db = getFirestore()
     
     // Generate a URL-friendly slug from the name
     const slug = data.name.toLowerCase()
@@ -39,8 +37,8 @@ export async function POST(request: Request) {
       ...data,
       slug,
       status: 'draft',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
       sections: [],
       settings: {
         colors: {

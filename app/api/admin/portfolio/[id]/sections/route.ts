@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getFirestore } from 'firebase-admin/firestore'
-import app from '@/lib/firebase/admin'
+import { db } from '@/lib/firebase-admin'
 import type { Section } from '@/types/portfolio'
 
 export async function GET(
@@ -8,7 +7,6 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = getFirestore(app)
     const sectionsSnapshot = await db
       .collection('portfolio-sites')
       .doc(params.id)

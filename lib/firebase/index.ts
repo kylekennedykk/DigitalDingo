@@ -18,18 +18,12 @@ let db: Firestore
 let storage: FirebaseStorage
 
 try {
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig)
-  } else {
-    app = getApps()[0]
-  }
-  
+  app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
   auth = getAuth(app)
   db = getFirestore(app)
   storage = getStorage(app)
 
   if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATOR === 'true') {
-    console.log('Using Firebase emulators')
     connectAuthEmulator(auth, 'http://127.0.0.1:9099')
     connectFirestoreEmulator(db, '127.0.0.1', 8080)
     connectStorageEmulator(storage, '127.0.0.1', 9199)

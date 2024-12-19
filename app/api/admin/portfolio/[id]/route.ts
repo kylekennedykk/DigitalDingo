@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getFirestore } from 'firebase-admin/firestore'
-import { adminApp } from '@/lib/firebase/admin'
+import { db } from '@/lib/firebase-admin'
+import { Timestamp } from 'firebase-admin/firestore'
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = getFirestore()
     const docRef = await db.collection('portfolio-sites').doc(params.id).get()
     
     if (!docRef.exists) {
@@ -36,11 +35,10 @@ export async function PATCH(
 ) {
   try {
     const data = await request.json()
-    const db = getFirestore()
     
     await db.collection('portfolio-sites').doc(params.id).update({
       ...data,
-      updatedAt: new Date().toISOString()
+      updatedAt: Timestamp.now()
     })
 
     const updatedDoc = await db.collection('portfolio-sites').doc(params.id).get()
