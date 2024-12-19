@@ -3,6 +3,23 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase/config'
 
+// Keep the original signIn function for direct Firebase auth
+export async function signIn() {
+  try {
+    const email = process.env.NEXT_PUBLIC_ADMIN_EMAIL
+    const password = process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+    
+    if (!email || !password) {
+      throw new Error('Admin credentials not configured')
+    }
+
+    await signInWithEmailAndPassword(auth, email, password)
+  } catch (error) {
+    console.error('Sign in error:', error)
+    throw error
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({

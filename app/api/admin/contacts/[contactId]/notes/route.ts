@@ -6,10 +6,9 @@ import { authOptions } from '@/lib/auth'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { contactId: string } }
+  context: { params: { contactId: string } }
 ) {
   try {
-    // Check authentication
     const session = await getServerSession(authOptions)
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -24,7 +23,7 @@ export async function POST(
       )
     }
 
-    const contactRef = doc(db, 'contacts', params.contactId)
+    const contactRef = doc(db, 'contacts', context.params.contactId)
     const contactSnap = await getDoc(contactRef)
 
     if (!contactSnap.exists()) {
