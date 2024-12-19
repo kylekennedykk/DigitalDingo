@@ -2,22 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase-admin'
 import { Timestamp, FieldValue } from 'firebase-admin/firestore'
 
-interface RouteParams {
-  params: {
-    contactId: string;
-  }
-}
-
-interface NoteData {
+type NoteData = {
   note: string;
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { contactId: string } }
 ) {
   try {
-    const { contactId } = params
+    const contactId = params.contactId
     const { note } = (await request.json()) as NoteData
 
     if (!note) {
