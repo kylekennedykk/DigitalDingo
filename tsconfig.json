@@ -25,7 +25,8 @@
       "@/*": ["./src/*"]
     },
     "target": "ES2017",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "next-env.d.ts",
