@@ -1,14 +1,20 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getFirestore } from 'firebase-admin/firestore'
 import { adminApp } from '@/lib/firebase/admin'
 
+interface RouteContext {
+  params: {
+    id: string
+  }
+}
+
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
     const db = getFirestore()
-    const docRef = await db.collection('portfolio-sites').doc(params.id).get()
+    const docRef = await db.collection('portfolio-sites').doc(context.params.id).get()
     
     if (!docRef.exists) {
       return NextResponse.json(
@@ -31,19 +37,19 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
     const data = await request.json()
     const db = getFirestore()
     
-    await db.collection('portfolio-sites').doc(params.id).update({
+    await db.collection('portfolio-sites').doc(context.params.id).update({
       ...data,
       updatedAt: new Date().toISOString()
     })
 
-    const updatedDoc = await db.collection('portfolio-sites').doc(params.id).get()
+    const updatedDoc = await db.collection('portfolio-sites').doc(context.params.id).get()
     
     return NextResponse.json({
       id: updatedDoc.id,
