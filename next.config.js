@@ -2,10 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  devIndicators: {
-    buildActivity: false,
-    buildActivityPosition: 'bottom-right',
-  },
   images: {
     domains: ['firebasestorage.googleapis.com', 'digitaldingo.uk'],
     remotePatterns: [
@@ -28,7 +24,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ['0.0.0.0', 'digitaldingo.uk']
+      allowedOrigins: ['localhost:3000', 'digitaldingo.uk']
     }
   },
   async headers() {
@@ -37,21 +33,45 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
           },
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          }
+        ],
+      },
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
     ]
   },
+  devIndicators: false,
 }
 
 module.exports = nextConfig
