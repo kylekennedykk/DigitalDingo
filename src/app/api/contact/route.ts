@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { Resend } from 'resend'
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
     
     // Validate required fields
     if (!data.name || !data.email || !data.message) {
-      return Response.json({
+      return NextResponse.json({
         error: 'Missing required fields',
         details: 'Name, email and message are required'
       }, { status: 400 })
@@ -22,7 +23,6 @@ export async function POST(req: Request) {
       status: 'new',
       createdAt: serverTimestamp(),
       source: data.source || 'web',
-      notes: [],
       lastUpdated: serverTimestamp()
     })
 
@@ -49,15 +49,14 @@ export async function POST(req: Request) {
       // Continue even if email fails
     }
 
-    return Response.json({ 
+    return NextResponse.json({ 
       success: true, 
       id: contactRef.id 
     })
   } catch (error) {
-    console.error('Contact submission error:', error)
-    return Response.json({ 
-      error: 'Failed to submit contact form',
-      details: error instanceof Error ? error.message : String(error)
+    console.error('Error processing contact form:', error)
+    return NextResponse.json({ 
+      error: 'Failed to process contact form submission' 
     }, { status: 500 })
   }
 } 
