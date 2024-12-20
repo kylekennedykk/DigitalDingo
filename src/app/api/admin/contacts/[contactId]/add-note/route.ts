@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { auth } from 'firebase-admin'
@@ -14,10 +14,13 @@ if (!getApps().length) {
   })
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { contactId: string } }
-) {
+interface RouteParams {
+  params: {
+    contactId: string
+  }
+}
+
+export async function POST(request: NextRequest, { params }: RouteParams) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
