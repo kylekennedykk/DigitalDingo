@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { getPortfolioBySlug } from '@/lib/firebase/firebaseUtils'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import Image from 'next/image'
 
 interface PortfolioData {
   title: string
@@ -88,9 +89,11 @@ function renderSection(section: { type: string; content: any }) {
       return <div className="prose">{section.content}</div>
     case 'image':
       return (
-        <img 
+        <Image 
           src={section.content.url} 
           alt={section.content.alt || ''}
+          width={1200}
+          height={800}
           className="w-full rounded-lg shadow-lg"
         />
       )
@@ -98,10 +101,12 @@ function renderSection(section: { type: string; content: any }) {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {section.content.images.map((image: any, index: number) => (
-            <img 
+            <Image 
               key={index}
               src={image.url}
               alt={image.alt || ''}
+              width={800}
+              height={600}
               className="w-full h-64 object-cover rounded-lg shadow-lg"
             />
           ))}
