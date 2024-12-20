@@ -86,7 +86,7 @@ export default function PortfolioPage() {
 function renderSection(section: { type: string; content: any }) {
   switch (section.type) {
     case 'text':
-      return <div className="prose">{section.content}</div>
+      return <div className="prose">{section.content.toString().replace(/"/g, '&quot;').replace(/'/g, '&apos;')}</div>
     case 'image':
       return (
         <Image 

@@ -2,9 +2,19 @@
 
 import { motion } from 'framer-motion'
 import type { Section } from '@/types/portfolio'
+import Image from 'next/image'
+
+interface GalleryImage {
+  url: string
+  alt: string
+}
 
 interface GalleryProps {
-  content: Section['content']
+  content: {
+    title?: string
+    subtitle?: string
+    images: GalleryImage[]
+  }
   settings: Section['settings']
 }
 
@@ -53,16 +63,18 @@ export default function Gallery({ content, settings }: GalleryProps) {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
             >
-              <img
-                src={image}
-                alt=""
-                className="w-full h-full object-cover rounded-lg"
+              <Image 
+                src={image.url} 
+                alt={image.alt || ''}
+                width={800}
+                height={600}
+                className="rounded-lg object-cover"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100
                 transition-opacity rounded-lg flex items-center justify-center"
               >
                 <button
-                  onClick={() => window.open(image, '_blank')}
+                  onClick={() => window.open(image.url, '_blank')}
                   className="px-6 py-2 bg-white text-black rounded-lg
                     hover:bg-neutral-100 transition-colors"
                 >

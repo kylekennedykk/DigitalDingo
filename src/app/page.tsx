@@ -276,8 +276,8 @@ export default function HomePage() {
               <span className="text-white"> Journey?</span>
             </h2>
             <p className="text-xl mb-12 text-neutral-300">
-              Let's create something extraordinary together. From concept to launch,
-              we'll bring your digital vision to life with precision and creativity.
+              Let&apos;s create something extraordinary together. From concept to launch,
+              we&apos;ll bring your digital vision to life with precision and creativity.
             </p>
             <Link
               href="/contact"

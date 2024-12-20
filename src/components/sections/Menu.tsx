@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import type { Section } from '@/types/portfolio'
+import Image from 'next/image'
 
 interface MenuProps {
   content: Section['content']
@@ -74,10 +75,12 @@ export default function Menu({ content, settings }: MenuProps) {
                     className="flex gap-4 items-start p-4 bg-white/5 rounded-lg"
                   >
                     {item.image && (
-                      <img
-                        src={item.image}
+                      <Image 
+                        src={item.image} 
                         alt={item.name}
-                        className="w-24 h-24 object-cover rounded-lg"
+                        width={400}
+                        height={300}
+                        className="rounded-lg"
                       />
                     )}
                     <div className="flex-1">

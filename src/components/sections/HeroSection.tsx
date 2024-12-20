@@ -7,8 +7,10 @@ export function HeroSection() {
   const { showFlow } = useDreamtimeFlow()
 
   useEffect(() => {
-    showFlow('fixed inset-0 -z-10')
-  }, [])
+    if (showFlow) {
+      showFlow('fixed inset-0 -z-10')
+    }
+  }, [showFlow])
 
   return (
     <section>

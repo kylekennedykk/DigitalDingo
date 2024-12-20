@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { VirtualList } from '@/components/ui/VirtualList'
 import { db } from '@/lib/firebase'
 import { collection, query, orderBy, limit, getDocs, startAfter } from 'firebase/firestore'
@@ -14,17 +14,45 @@ export default function PortfolioPage() {
   const [lastDoc, setLastDoc] = useState<any>(null)
   const [hasMore, setHasMore] = useState(true)
 
-  const loadItems = async (isInitial = false) => {
+  useEffect(() => {
+    const loadInitialItems = async () => {
+      try {
+        let q = query(
+          collection(db, 'portfolio-sites'),
+          orderBy('createdAt', 'desc'),
+          limit(ITEMS_PER_PAGE)
+        )
+
+        const snapshot = await getDocs(q)
+        const newItems = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as PortfolioSite[]
+
+        setLastDoc(snapshot.docs[snapshot.docs.length - 1])
+        setHasMore(snapshot.docs.length === ITEMS_PER_PAGE)
+        setItems(newItems)
+      } catch (error) {
+        console.error('Error loading items:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadInitialItems()
+  }, [])
+
+  const loadMoreItems = useCallback(async () => {
+    if (!hasMore || loading || !lastDoc) return
+
+    setLoading(true)
     try {
-      let q = query(
+      const q = query(
         collection(db, 'portfolio-sites'),
         orderBy('createdAt', 'desc'),
+        startAfter(lastDoc),
         limit(ITEMS_PER_PAGE)
       )
-
-      if (!isInitial && lastDoc) {
-        q = query(q, startAfter(lastDoc))
-      }
 
       const snapshot = await getDocs(q)
       const newItems = snapshot.docs.map(doc => ({
@@ -34,28 +62,19 @@ export default function PortfolioPage() {
 
       setLastDoc(snapshot.docs[snapshot.docs.length - 1])
       setHasMore(snapshot.docs.length === ITEMS_PER_PAGE)
-
-      if (isInitial) {
-        setItems(newItems)
-      } else {
-        setItems(prev => [...prev, ...newItems])
-      }
+      setItems(prev => [...prev, ...newItems])
     } catch (error) {
-      console.error('Error loading items:', error)
+      console.error('Error loading more items:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [hasMore, loading, lastDoc])
 
-  useEffect(() => {
-    loadItems(true)
-  }, [])
-
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (hasMore && !loading) {
-      loadItems()
+      loadMoreItems()
     }
-  }
+  }, [hasMore, loading, loadMoreItems])
 
   return (
     <div className="space-y-6">
