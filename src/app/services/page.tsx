@@ -13,6 +13,7 @@ import {
   Cpu,
   ArrowRight
 } from 'lucide-react';
+import Image from 'next/image';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -202,8 +203,7 @@ export default function ServicesPage() {
                 Ready to Transform Your Digital Presence?
               </h2>
               <p className="text-xl mb-12 text-neutral-300">
-                Let&apos;s create something extraordinary together. Contact us today to discuss
-                your project and discover how we can help bring your vision to life.
+                {"Let's create something extraordinary together. Contact us today to discuss your project and discover how we can help bring your vision to life."}
               </p>
               <Link
                 href="/contact"

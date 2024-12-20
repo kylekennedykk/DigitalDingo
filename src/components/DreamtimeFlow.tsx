@@ -82,11 +82,12 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
   const mountCount = useRef(0)
   
   useEffect(() => {
+    const currentMountCount = mountCount.current
     mountCount.current++
-    console.log(`DreamtimeFlow mount #${mountCount.current}`, { className })
+    console.log(`DreamtimeFlow mount #${currentMountCount}`, { className })
     
     return () => {
-      console.log(`DreamtimeFlow unmount #${mountCount.current}`)
+      console.log(`DreamtimeFlow unmount #${currentMountCount}`)
     }
   }, [className])
 
@@ -261,9 +262,9 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
 
   useEffect(() => {
     const currentMountCount = mountCount.current
+    
     return () => {
       if (currentMountCount === mountCount.current) {
-        // Cleanup code
         if (frameRef.current) {
           cancelAnimationFrame(frameRef.current)
         }
@@ -286,7 +287,7 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
         }
       }
     }
-  }, []) // Remove value from dependencies since it's not used
+  }, [])
 
   return (
     <div

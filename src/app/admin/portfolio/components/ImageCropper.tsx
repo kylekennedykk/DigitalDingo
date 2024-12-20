@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef, forwardRef } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { X, Check, Loader2 } from 'lucide-react'
 import ReactCrop, { Crop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import Image, { ImageProps } from 'next/image'
+import Image from 'next/image'
 
 interface ImageCropperProps {
   image: string
@@ -13,11 +13,6 @@ interface ImageCropperProps {
   onComplete: (croppedImage: Blob) => void
   onCancel: () => void
 }
-
-const ForwardedImage = forwardRef<HTMLImageElement, ImageProps>((props, ref) => (
-  <Image {...props} ref={ref as any} />
-))
-ForwardedImage.displayName = 'ForwardedImage'
 
 export default function ImageCropper({
   image,
@@ -110,13 +105,14 @@ export default function ImageCropper({
             aspect={aspect}
             className="max-h-[60vh] mx-auto"
           >
-            <ForwardedImage
+            <Image
               ref={imageRef}
               src={image}
               alt="Image to crop"
               width={800}
               height={600}
               className="max-w-full h-auto"
+              unoptimized
             />
           </ReactCrop>
         </div>
