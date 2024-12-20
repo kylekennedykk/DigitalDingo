@@ -262,9 +262,10 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
 
   useEffect(() => {
     const currentMountCount = mountCount.current
+    const originalMountCount = mountCount.current
     
     return () => {
-      if (currentMountCount === mountCount.current) {
+      if (currentMountCount === originalMountCount) {
         if (frameRef.current) {
           cancelAnimationFrame(frameRef.current)
         }
