@@ -15,6 +15,7 @@ import {
   QueryDocumentSnapshot 
 } from '@firebase/firestore'
 import { ref, getDownloadURL } from '@firebase/storage'
+import Image from 'next/image'
 
 interface PortfolioItem {
   id: string
@@ -167,15 +168,14 @@ export default function PortfolioPage() {
                     transform hover:-translate-y-1"
                 >
                   <div className="aspect-video w-full overflow-hidden">
-                    <img 
-                      src={item.thumbnail} 
+                    <Image 
+                      src={item.thumbnail || '/images/placeholder-portfolio.jpg'}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-300 
-                        group-hover:scale-105"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/images/placeholder-portfolio.jpg';
-                        target.onerror = null;
+                      width={800}
+                      height={600}
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={() => {
+                        console.warn(`Failed to load image for ${item.title}`)
                       }}
                     />
                   </div>
@@ -218,7 +218,7 @@ export default function PortfolioPage() {
                 <span className="text-white"> Journey?</span>
               </h2>
               <p className="text-xl mb-12 text-neutral-300">
-                Let's create something extraordinary together. Contact us today to discuss
+                Let&apos;s create something extraordinary together. Contact us today to discuss
                 your project and discover how we can help bring your vision to life.
               </p>
               <Link

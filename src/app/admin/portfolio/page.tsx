@@ -15,7 +15,7 @@ export default function PortfolioPage() {
   const [hasMore, setHasMore] = useState(true)
 
   useEffect(() => {
-    const loadInitialItems = async () => {
+    const loadItems = async () => {
       try {
         let q = query(
           collection(db, 'portfolio-sites'),
@@ -39,7 +39,7 @@ export default function PortfolioPage() {
       }
     }
 
-    loadInitialItems()
+    loadItems()
   }, [])
 
   const loadMoreItems = useCallback(async () => {

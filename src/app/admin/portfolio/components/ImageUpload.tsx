@@ -16,7 +16,7 @@ export default function ImageUpload({ value, onChange, aspect = 16/9 }: ImageUpl
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     // Handle file upload logic here
-  }, [onChange])
+  }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

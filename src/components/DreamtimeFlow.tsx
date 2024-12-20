@@ -259,6 +259,16 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    const currentMountCount = mountCount.current
+    const currentValue = value // Store current value
+    return () => {
+      if (currentMountCount === mountCount.current && currentValue === value) {
+        // cleanup code
+      }
+    }
+  }, [value]) // Add missing dependencies
+
   return (
     <div
       ref={containerRef}
