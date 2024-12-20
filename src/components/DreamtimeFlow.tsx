@@ -261,13 +261,32 @@ export const DreamtimeFlow = memo(function DreamtimeFlow({
 
   useEffect(() => {
     const currentMountCount = mountCount.current
-    const currentValue = value // Store current value
     return () => {
-      if (currentMountCount === mountCount.current && currentValue === value) {
-        // cleanup code
+      if (currentMountCount === mountCount.current) {
+        // Cleanup code
+        if (frameRef.current) {
+          cancelAnimationFrame(frameRef.current)
+        }
+        if (rendererRef.current) {
+          rendererRef.current.dispose()
+          rendererRef.current.forceContextLoss()
+          rendererRef.current.domElement.remove()
+        }
+        if (materialRef.current) {
+          materialRef.current.dispose()
+        }
+        if (geometryRef.current) {
+          geometryRef.current.dispose()
+        }
+        if (meshRef.current) {
+          meshRef.current.geometry.dispose()
+          if (meshRef.current.material instanceof THREE.Material) {
+            meshRef.current.material.dispose()
+          }
+        }
       }
     }
-  }, [value]) // Add missing dependencies
+  }, []) // Remove value from dependencies since it's not used
 
   return (
     <div

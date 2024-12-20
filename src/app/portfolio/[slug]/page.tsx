@@ -22,6 +22,12 @@ interface PortfolioData {
   }
 }
 
+interface SectionContent {
+  text: { content: string }
+  image: { url: string; alt?: string }
+  gallery: { images: Array<{ url: string; alt?: string }> }
+}
+
 export default function PortfolioPage() {
   const { slug } = useParams()
   const [portfolio, setPortfolio] = useState<PortfolioData | null>(null)
@@ -83,19 +89,28 @@ export default function PortfolioPage() {
   )
 }
 
-function renderSection(section: { type: string; content: any }) {
+function renderSection(section: { 
+  type: keyof SectionContent; 
+  content: SectionContent[keyof SectionContent] 
+}) {
   switch (section.type) {
     case 'text':
-      return <div className="prose">{section.content.toString().replace(/"/g, '&quot;').replace(/'/g, '&apos;')}</div>
+      return <div className="prose">{section.content.content.toString().replace(/"/g, '&quot;').replace(/'/g, '&apos;')}</div>
     case 'image':
       return (
-        <Image 
-          src={section.content.url} 
-          alt={section.content.alt || ''}
-          width={1200}
-          height={800}
-          className="w-full rounded-lg shadow-lg"
-        />
+        <div className="relative">
+          <Image 
+            src={section.content.url || '/images/placeholder.jpg'} 
+            alt={section.content.alt || ''}
+            width={1200}
+            height={800}
+            className="w-full rounded-lg shadow-lg"
+            onError={() => {
+              console.warn('Failed to load image:', section.content.url)
+            }}
+            loading="lazy"
+          />
+        </div>
       )
     case 'gallery':
       return (
