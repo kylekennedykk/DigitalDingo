@@ -1,157 +1,113 @@
-import { notFound } from 'next/navigation'
-import { getFirestore } from 'firebase-admin/firestore'
-import app from '@/lib/firebase/admin'
-import { themes } from '@/lib/themes'
-import type { PortfolioSite, Section } from '@/types/portfolio'
-import HeroSection from '@/components/sections/Hero'
-import ContentSection from '@/components/sections/Content'
-import GallerySection from '@/components/sections/Gallery'
-import MenuSection from '@/components/sections/Menu'
-import TestimonialsSection from '@/components/sections/Testimonials'
-import TeamSection from '@/components/sections/Team'
-import HoursSection from '@/components/sections/Hours'
-import LocationSection from '@/components/sections/Location'
-import FaqSection from '@/components/sections/Faq'
+'use client'
 
-// Generate static params for all published sites
-export async function generateStaticParams() {
-  const db = getFirestore(app)
-  const sitesSnapshot = await db
-    .collection('portfolio-sites')
-    .where('status', '==', 'published')
-    .get()
+import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
+import { getPortfolioBySlug } from '@/lib/firebase/firebaseUtils'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
-  return sitesSnapshot.docs.map(doc => ({
-    slug: doc.data().slug
-  }))
+interface PortfolioData {
+  title: string
+  description: string
+  sections: {
+    type: string
+    content: any
+  }[]
+  theme: {
+    colors: {
+      primary: string
+      secondary: string
+      accent: string
+    }
+  }
 }
 
-async function getSite(slug: string): Promise<PortfolioSite | null> {
-  const db = getFirestore(app)
-  
-  // Get the site document
-  const siteSnapshot = await db
-    .collection('portfolio-sites')
-    .where('slug', '==', slug)
-    .where('status', '==', 'published')
-    .limit(1)
-    .get()
+export default function PortfolioPage() {
+  const { slug } = useParams()
+  const [portfolio, setPortfolio] = useState<PortfolioData | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  if (siteSnapshot.empty) return null
+  useEffect(() => {
+    const loadPortfolio = async () => {
+      try {
+        if (typeof slug === 'string') {
+          const data = await getPortfolioBySlug(slug)
+          setPortfolio(data as PortfolioData)
+        }
+      } catch (error) {
+        console.error('Error loading portfolio:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const siteDoc = siteSnapshot.docs[0]
-  const siteData = siteDoc.data()
+    loadPortfolio()
+  }, [slug])
 
-  // Get the site's sections
-  const sectionsSnapshot = await db
-    .collection('portfolio-sites')
-    .doc(siteDoc.id)
-    .collection('sections')
-    .orderBy('order')
-    .get()
-
-  const sections = sectionsSnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  })) as Section[]
-
-  return {
-    id: siteDoc.id,
-    ...siteData,
-    sections
-  } as PortfolioSite
-}
-
-export default async function PortfolioSitePage({
-  params
-}: {
-  params: { slug: string }
-}) {
-  const site = await getSite(params.slug)
-  
-  if (!site) {
-    notFound()
+  if (loading) {
+    return <LoadingSpinner />
   }
 
-  const theme = themes[site.theme || 'default']
+  if (!portfolio) {
+    return <div>Portfolio not found</div>
+  }
 
   return (
-    <div style={{ 
-      backgroundColor: theme.colors.background,
-      color: theme.colors.text,
-      fontFamily: theme.fonts.body
-    }}>
-      <style jsx global>{`
-        .font-heading {
-          font-family: ${theme.fonts.heading}, system-ui;
-        }
-        .text-primary {
-          color: ${theme.colors.primary};
-        }
-        .bg-primary {
-          background-color: ${theme.colors.primary};
-        }
-        .text-secondary {
-          color: ${theme.colors.secondary};
-        }
-        .bg-secondary {
-          background-color: ${theme.colors.secondary};
-        }
-        .text-accent {
-          color: ${theme.colors.accent};
-        }
-        .bg-accent {
-          background-color: ${theme.colors.accent};
-        }
-      `}</style>
-
-      {site.sections.map((section) => {
-        switch (section.type) {
-          case 'hero':
-            return <HeroSection key={section.id} content={section.content} settings={section.settings} />
-          case 'content':
-            return <ContentSection key={section.id} content={section.content} settings={section.settings} />
-          case 'gallery':
-            return <GallerySection key={section.id} content={section.content} settings={section.settings} />
-          case 'menu':
-            return <MenuSection key={section.id} content={section.content} settings={section.settings} />
-          case 'testimonials':
-            return <TestimonialsSection key={section.id} content={section.content} settings={section.settings} />
-          case 'team':
-            return <TeamSection key={section.id} content={section.content} settings={section.settings} />
-          case 'hours':
-            return <HoursSection key={section.id} content={section.content} settings={section.settings} />
-          case 'location':
-            return <LocationSection key={section.id} content={section.content} settings={section.settings} />
-          case 'faq':
-            return <FaqSection key={section.id} content={section.content} settings={section.settings} />
-          default:
-            return null
-        }
-      })}
-    </div>
+    <main className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-4xl font-bold mb-8" 
+            style={{color: portfolio.theme.colors.primary}}>
+          {portfolio.title}
+        </h1>
+        
+        <div className="prose max-w-none">
+          <p className="text-lg mb-12">{portfolio.description}</p>
+          
+          {portfolio.sections.map((section, index) => (
+            <section 
+              key={index}
+              className="mb-16"
+              style={{
+                backgroundColor: index % 2 === 0 
+                  ? portfolio.theme.colors.secondary + '20'
+                  : 'transparent'
+              }}
+            >
+              {/* Render different section types */}
+              {renderSection(section)}
+            </section>
+          ))}
+        </div>
+      </div>
+    </main>
   )
 }
 
-// Add metadata generation
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const site = await getSite(params.slug)
-  
-  if (!site) {
-    return {
-      title: 'Site Not Found | DigitalDingo Portfolio',
-      description: 'The requested portfolio site could not be found.'
-    }
-  }
-
-  return {
-    title: `${site.name} | DigitalDingo Portfolio`,
-    description: site.description || `A portfolio site created by DigitalDingo`,
-    openGraph: {
-      title: site.name,
-      description: site.description,
-      images: site.thumbnail ? [site.thumbnail] : [],
-      type: 'website',
-    },
+function renderSection(section: { type: string; content: any }) {
+  switch (section.type) {
+    case 'text':
+      return <div className="prose">{section.content}</div>
+    case 'image':
+      return (
+        <img 
+          src={section.content.url} 
+          alt={section.content.alt || ''}
+          className="w-full rounded-lg shadow-lg"
+        />
+      )
+    case 'gallery':
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {section.content.images.map((image: any, index: number) => (
+            <img 
+              key={index}
+              src={image.url}
+              alt={image.alt || ''}
+              className="w-full h-64 object-cover rounded-lg shadow-lg"
+            />
+          ))}
+        </div>
+      )
+    default:
+      return null
   }
 } 
