@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server'
 import { getFirestore } from 'firebase-admin/firestore'
 import { adminApp } from '@/lib/firebase/admin'
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string; sectionId: string } }
-) {
+type Params = { params: { id: string; sectionId: string } }
+
+export async function GET(request: Request, { params }: Params) {
   try {
     const db = getFirestore()
     const docRef = await db
@@ -35,10 +34,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string; sectionId: string } }
-) {
+export async function PATCH(request: Request, { params }: Params) {
   try {
     const data = await request.json()
     const db = getFirestore()
@@ -75,10 +71,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string; sectionId: string } }
-) {
+export async function DELETE(request: Request, { params }: Params) {
   try {
     const db = getFirestore()
     

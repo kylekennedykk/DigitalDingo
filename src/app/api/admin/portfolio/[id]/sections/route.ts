@@ -3,10 +3,9 @@ import { getFirestore } from 'firebase-admin/firestore'
 import app from '@/lib/firebase/admin'
 import type { Section } from '@/types/portfolio'
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+type Params = { params: { id: string } }
+
+export async function GET(request: Request, { params }: Params) {
   try {
     const db = getFirestore(app)
     const sectionsSnapshot = await db
@@ -31,10 +30,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, { params }: Params) {
   try {
     const data = await request.json()
     const db = getFirestore(app)

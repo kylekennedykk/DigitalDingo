@@ -13,10 +13,10 @@ interface ChatContactSubmission {
   chatId: string
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     console.log('Received contact submission request')
-    const data: ChatContactSubmission = await req.json()
+    const data: ChatContactSubmission = await request.json()
     
     // Validate required fields
     if (!data.name || !data.email || !data.message || !data.chatId) {

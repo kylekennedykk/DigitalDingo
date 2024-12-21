@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server'
 import { getFirestore } from 'firebase-admin/firestore'
 import app from '@/lib/firebase/admin'
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+type Params = { params: { id: string } }
+
+export async function PATCH(request: Request, { params }: Params) {
   try {
     const data = await request.json()
     const db = getFirestore(app)
@@ -30,10 +29,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, { params }: Params) {
   try {
     const db = getFirestore(app)
     await db.collection('portfolio-external').doc(params.id).delete()
