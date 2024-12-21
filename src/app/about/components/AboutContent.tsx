@@ -90,7 +90,7 @@ export function AboutContent({ initialData }: AboutContentProps) {
       {/* Team Member Dialog */}
       <Dialog
         open={!!selectedMember}
-        onClose={() => setSelectedMember(null)}
+        onOpenChange={(open) => !open && setSelectedMember(null)}
         title={selectedMember?.name || ''}
       >
         <div className="space-y-4">

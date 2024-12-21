@@ -46,34 +46,37 @@ interface ChatAnalyticsDialogProps {
 // First add the helper function at the top
 function formatDuration(start: Date, end: Date): string {
   const diff = Math.floor((end.getTime() - start.getTime()) / 1000) // in seconds
-
+  
   const hours = Math.floor(diff / 3600)
   const minutes = Math.floor((diff % 3600) / 60)
   const seconds = diff % 60
-
+  
   const parts = []
   if (hours > 0) parts.push(`${hours}h`)
   if (minutes > 0) parts.push(`${minutes}m`)
   if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`)
-
+  
   return parts.join(' ')
 }
 
-export function ChatAnalyticsDialog({
-  chat,
-  open,
-  onOpenChange
+export function ChatAnalyticsDialog({ 
+  chat, 
+  open, 
+  onOpenChange 
 }: ChatAnalyticsDialogProps) {
   if (!chat || !chat.data) return null
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog 
+      open={open} 
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="max-w-6xl h-[80vh] flex flex-col p-0">
         <div className="flex justify-between items-center p-4 border-b">
           <DialogTitle className="text-lg font-semibold">
             Chat with {chat.data.userName || 'Anonymous'}
           </DialogTitle>
-          <button
+          <button 
             onClick={() => onOpenChange(false)}
             className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
           >
@@ -92,10 +95,11 @@ export function ChatAnalyticsDialog({
                     className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}
                   >
                     <div
-                      className={`max-w-[80%] p-3 rounded-xl ${message.role === 'user'
+                      className={`max-w-[80%] p-3 rounded-xl ${
+                        message.role === 'user'
                           ? 'bg-black text-white'
                           : 'bg-neutral-100'
-                        }`}
+                      }`}
                     >
                       {message.content}
                     </div>
@@ -125,7 +129,7 @@ export function ChatAnalyticsDialog({
                     <div>
                       <span className="text-neutral-500">Ended:</span>
                       <span className="ml-2">
-                        {chat.data.metadata.endTime
+                        {chat.data.metadata.endTime 
                           ? new Date(chat.data.metadata.endTime).toLocaleString()
                           : 'Active'}
                       </span>
@@ -141,10 +145,11 @@ export function ChatAnalyticsDialog({
                     </div>
                     <div>
                       <span className="text-neutral-500">Status:</span>
-                      <span className={`ml-2 px-2 py-1 text-xs rounded-full ${chat.data.status === 'active'
+                      <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
+                        chat.data.status === 'active' 
                           ? 'bg-green-100 text-green-800'
                           : 'bg-neutral-100'
-                        }`}>
+                      }`}>
                         {chat.data.status}
                       </span>
                     </div>
@@ -180,13 +185,13 @@ export function ChatAnalyticsDialog({
                         <div>
                           <span className="text-neutral-500">Coordinates:</span>
                           <span className="ml-2">
-                            {chat.data.metadata.location.latitude.toFixed(6)},
+                            {chat.data.metadata.location.latitude.toFixed(6)}, 
                             {chat.data.metadata.location.longitude?.toFixed(6)}
                           </span>
                         </div>
                       )}
                     </div>
-
+                    
                     {chat.data.metadata.location?.latitude && chat.data.metadata.location?.longitude && (
                       <LocationMap
                         latitude={chat.data.metadata.location.latitude}
@@ -244,7 +249,7 @@ export function ChatAnalyticsDialog({
                     <div>
                       <span className="text-neutral-500">Words Exchanged:</span>
                       <span className="ml-2">
-                        {chat.data.messages.reduce((acc, msg) =>
+                        {chat.data.messages.reduce((acc, msg) => 
                           acc + msg.content.split(/\s+/).length, 0
                         )}
                       </span>

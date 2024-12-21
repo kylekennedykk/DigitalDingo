@@ -124,7 +124,7 @@ export default function ExternalPortfolioPage() {
 
       <Dialog
         open={isEditing}
-        onClose={handleCancel}
+        onOpenChange={(open) => !open && handleCancel()}
         title={selectedProject ? 'Edit Project' : 'Add New Project'}
       >
         <ExternalPortfolioForm
