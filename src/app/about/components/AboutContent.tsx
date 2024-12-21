@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Dialog } from '@/components/ui/Dialog'
+import { Dialog } from '@/components/ui/dialog'
 
 interface TeamMember {
   id: string
