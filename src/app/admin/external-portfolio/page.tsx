@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { ExternalPortfolioForm } from './components/ExternalPortfolioForm'
-import { Dialog } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 interface ExternalPortfolioItem {
   id: string
@@ -125,14 +125,18 @@ export default function ExternalPortfolioPage() {
       <Dialog
         open={isEditing}
         onOpenChange={(open) => !open && handleCancel()}
-        title={selectedProject ? 'Edit Project' : 'Add New Project'}
       >
-        <ExternalPortfolioForm
-          key={selectedProject?.id || 'new'}
-          project={selectedProject || undefined}
-          onCancel={handleCancel}
-          onSaveComplete={handleSaveComplete}
-        />
+        <DialogContent>
+          <DialogTitle>
+            {selectedProject ? 'Edit Project' : 'Add New Project'}
+          </DialogTitle>
+          <ExternalPortfolioForm
+            key={selectedProject?.id || 'new'}
+            project={selectedProject || undefined}
+            onCancel={handleCancel}
+            onSaveComplete={handleSaveComplete}
+          />
+        </DialogContent>
       </Dialog>
     </div>
   )

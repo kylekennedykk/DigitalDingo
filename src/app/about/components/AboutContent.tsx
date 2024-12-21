@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Dialog } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 interface TeamMember {
   id: string
@@ -91,23 +91,25 @@ export function AboutContent({ initialData }: AboutContentProps) {
       <Dialog
         open={!!selectedMember}
         onOpenChange={(open) => !open && setSelectedMember(null)}
-        title={selectedMember?.name || ''}
       >
-        <div className="space-y-4">
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-            <Image
-              src={selectedMember?.photo || '/images/placeholder-profile.jpg'}
-              alt={selectedMember?.name || ''}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
+        <DialogContent>
+          <DialogTitle>{selectedMember?.name || ''}</DialogTitle>
+          <div className="space-y-4">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+              <Image
+                src={selectedMember?.photo || '/images/placeholder-profile.jpg'}
+                alt={selectedMember?.name || ''}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            </div>
+            <h3 className="font-heading text-xl">{selectedMember?.role}</h3>
+            <div className="space-y-2">
+              {selectedMember?.description}
+            </div>
           </div>
-          <h3 className="font-heading text-xl">{selectedMember?.role}</h3>
-          <div className="space-y-2">
-            {selectedMember?.description}
-          </div>
-        </div>
+        </DialogContent>
       </Dialog>
     </main>
   )
