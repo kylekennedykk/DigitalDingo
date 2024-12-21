@@ -2,14 +2,16 @@ import { NextRequest } from 'next/server'
 import { getFirestore } from 'firebase-admin/firestore'
 import { adminApp } from '@/lib/firebase/admin'
 
-// Define the params interface
-interface RouteParams {
+type Props = {
   params: {
     id: string
   }
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest,
+  { params }: Props
+) {
   try {
     const { id } = params
     
@@ -38,7 +40,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function PATCH(request: Request, { params }: RouteParams) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: Props
+) {
   try {
     const data = await request.json()
     const db = getFirestore()
@@ -65,7 +70,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: Props
+) {
   try {
     const db = getFirestore()
     await db.collection('portfolio-sites').doc(params.id).delete()
