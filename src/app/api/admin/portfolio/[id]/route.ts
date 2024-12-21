@@ -1,19 +1,14 @@
 import { NextResponse } from 'next/server'
 import { getFirestore } from 'firebase-admin/firestore'
 import { adminApp } from '@/lib/firebase/admin'
-import type { NextRequest } from 'next/server'
-
-type Context = {
-  params: Record<string, string | string[]>
-}
 
 export async function GET(
-  request: NextRequest,
-  context: Context
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const db = getFirestore()
-    const docRef = await db.collection('portfolio-sites').doc(context.params.id as string).get()
+    const docRef = await db.collection('portfolio-sites').doc(params.id).get()
     
     if (!docRef.exists) {
       return NextResponse.json(
@@ -36,19 +31,19 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: NextRequest,
-  context: Context
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const data = await request.json()
     const db = getFirestore()
     
-    await db.collection('portfolio-sites').doc(context.params.id as string).update({
+    await db.collection('portfolio-sites').doc(params.id).update({
       ...data,
       updatedAt: new Date().toISOString()
     })
 
-    const updatedDoc = await db.collection('portfolio-sites').doc(context.params.id as string).get()
+    const updatedDoc = await db.collection('portfolio-sites').doc(params.id).get()
     
     return NextResponse.json({
       id: updatedDoc.id,
@@ -64,12 +59,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  context: Context
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const db = getFirestore()
-    await db.collection('portfolio-sites').doc(context.params.id as string).delete()
+    await db.collection('portfolio-sites').doc(params.id).delete()
     
     return NextResponse.json({ status: 'success' })
   } catch (error) {
