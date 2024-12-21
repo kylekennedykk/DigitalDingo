@@ -1,20 +1,21 @@
-
 'use client'
 
 interface PageWithFlowProps {
   children: React.ReactNode
+  variant?: 'light' | 'dark'
   opacity?: number
-  variant?: 'dark' | 'light'
 }
 
 export function PageWithFlow({ 
-  children
+  children, 
+  variant = 'light',
+  opacity = 1 
 }: PageWithFlowProps) {
   return (
-    <div className="relative min-h-screen">
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
+    <main className={`relative min-h-screen ${
+      variant === 'dark' ? 'text-white' : 'text-black'
+    }`}>
+      {children}
+    </main>
   )
 }
