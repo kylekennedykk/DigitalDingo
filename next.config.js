@@ -3,7 +3,6 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     domains: ['firebasestorage.googleapis.com'],
     remotePatterns: [
