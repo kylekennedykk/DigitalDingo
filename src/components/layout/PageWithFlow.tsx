@@ -1,21 +1,23 @@
 'use client'
 
+import React from 'react'
+
 interface PageWithFlowProps {
   children: React.ReactNode
   variant?: 'light' | 'dark'
   opacity?: number
 }
 
-export function PageWithFlow({ 
-  children, 
+const PageWithFlow: React.FC<PageWithFlowProps> = ({
+  children,
   variant = 'light',
-  opacity = 1 
-}: PageWithFlowProps) {
+  opacity = 0.5
+}) => {
   return (
-    <main className={`relative min-h-screen ${
-      variant === 'dark' ? 'text-white' : 'text-black'
-    }`}>
+    <div className="min-h-screen w-full">
       {children}
-    </main>
+    </div>
   )
 }
+
+export default PageWithFlow

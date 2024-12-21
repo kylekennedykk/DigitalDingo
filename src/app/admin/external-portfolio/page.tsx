@@ -1,10 +1,25 @@
 'use client'
 
+import React from 'react'
 import { useState, useEffect } from 'react'
 import { collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { ExternalPortfolioForm } from './components/ExternalPortfolioForm'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+
+// Add JSX namespace
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      div: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+      button: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+      h1: React.DetailedHTMLProps<React.HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
+      h3: React.DetailedHTMLProps<React.HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
+      p: React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>;
+      span: React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
+    }
+  }
+}
 
 interface ExternalPortfolioItem {
   id: string
@@ -124,6 +139,7 @@ export default function ExternalPortfolioPage() {
 
       <Dialog
         open={isEditing}
+        onClose={() => handleCancel()}
         onOpenChange={(open) => !open && handleCancel()}
       >
         <DialogContent>

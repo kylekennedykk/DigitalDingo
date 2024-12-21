@@ -1,46 +1,39 @@
 'use client'
 
-import { Component, ErrorInfo, ReactNode } from 'react'
+import React, { ReactNode } from 'react';
 
-interface Props {
-  children: ReactNode
-  fallback?: ReactNode
-}
-
-interface State {
-  hasError: boolean
-  error?: Error
-}
-
-export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false
+class ErrorBoundary extends React.Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
   }
 
-  public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo)
-  }
-
-  public render() {
+  render(): ReactNode {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="p-4 text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Something went wrong</h2>
-          <p className="text-gray-600 mb-4">Please try refreshing the page</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Refresh Page
-          </button>
+      return (
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Something went wrong</h1>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+            >
+              Reload Page
+            </button>
+          </div>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
-} 
+}
+
+export default ErrorBoundary; 

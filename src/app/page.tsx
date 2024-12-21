@@ -4,25 +4,10 @@ import React, { useEffect } from 'react'
 import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
 import Link from 'next/link'
 import { motion, Variants } from 'framer-motion'
-import { 
-  Globe2, 
-  Palette, 
-  Megaphone, 
-  Layers, 
-  Search, 
-  Pencil, 
-  Code2, 
-  TestTube, 
-  Rocket,
-  BarChart3,
-  Wrench
-} from 'lucide-react'
-import { GradientCard } from '@/components/GradientCard'
-import { PageWithFlow } from '@/components/layout/PageWithFlow'
-import dynamic from 'next/dynamic'
+import PageWithFlow from '@/components/layout/PageWithFlow'
 import { DreamtimeFlowProvider } from '@/lib/contexts/DreamtimeFlowContext'
+import type { ReactElement, JSX } from 'react'
 
-// Animation variants
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
@@ -43,13 +28,6 @@ const container: Variants = {
   }
 }
 
-const LatestProjects = dynamic(
-  () => import('@/components/LatestProjects').then(mod => mod.LatestProjects),
-  {
-    loading: () => <div className="h-[600px]" />
-  }
-)
-
 function HomeContent() {
   const { showFlow } = useDreamtimeFlow()
 
@@ -63,19 +41,35 @@ function HomeContent() {
 
   return (
     <PageWithFlow variant="dark" opacity={0.8}>
-      {/* Hero Section */}
-      <section className="relative min-h-screen">
-        <div className="relative z-10 min-h-screen flex flex-col justify-between px-4">
+      <motion.section 
+        className="relative min-h-screen"
+        initial="hidden"
+        animate="visible"
+        variants={container}
+      >
+        <motion.div 
+          className="relative z-10 min-h-screen flex flex-col justify-between px-4"
+          variants={fadeIn}
+        >
           <div className="container mx-auto flex-1 flex items-center justify-center">
             <div className="text-center">
-              <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in">
+              <motion.h1 
+                className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
+                variants={fadeIn}
+              >
                 <span className="text-black">Digital</span>
                 <span className="text-primary-red">Dingo</span>
-              </h1>
-              <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-neutral-800 animate-slide-up">
+              </motion.h1>
+              <motion.p 
+                className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-neutral-800"
+                variants={fadeIn}
+              >
                 Creating stunning, high-performance websites tailored to your unique vision
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
+              </motion.p>
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                variants={fadeIn}
+              >
                 <Link
                   href="/portfolio"
                   className="px-8 py-4 bg-transparent text-neutral-900 rounded-full
@@ -100,37 +94,21 @@ function HomeContent() {
                 >
                   Start a Project
                 </Link>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="bg-white py-24">
-        {/* ... Rest of the services section ... */}
-      </section>
-
-      {/* Process Section */}
-      <section className="relative py-32">
-        {/* ... Rest of the process section ... */}
-      </section>
-
-      {/* Projects Section */}
-      <LatestProjects />
-
-      {/* CTA Section */}
-      <section className="bg-neutral-900 text-white py-32">
-        {/* ... Rest of the CTA section ... */}
-      </section>
+        </motion.div>
+      </motion.section>
     </PageWithFlow>
   )
 }
 
-export default function HomePage() {
+const HomePage = (): JSX.Element => {
   return (
     <DreamtimeFlowProvider>
       <HomeContent />
     </DreamtimeFlowProvider>
   )
 }
+
+export default HomePage

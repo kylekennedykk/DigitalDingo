@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { PageWithFlow } from '@/components/layout/PageWithFlow'
+import PageWithFlow from '@/components/layout/PageWithFlow'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { db, storage } from '@/lib/firebase'

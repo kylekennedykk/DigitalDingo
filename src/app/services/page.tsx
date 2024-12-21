@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { PageWithFlow } from '@/components/layout/PageWithFlow';
+import PageWithFlow from '@/components/layout/PageWithFlow';
 import Link from 'next/link';
 import { 
   Globe2, 

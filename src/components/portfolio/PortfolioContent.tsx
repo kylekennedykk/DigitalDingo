@@ -2,7 +2,7 @@
 
 import { motion, Variants } from 'framer-motion'
 import { PortfolioCard } from '@/components/portfolio/PortfolioCard'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { useDreamtimeFlow } from '@/lib/contexts/DreamtimeFlowContext'
 import { useEffect } from 'react'
 
