@@ -12,8 +12,7 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  type DocumentData,
-  getDoc
+  type DocumentData
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -55,18 +54,3 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
 };
-
-export async function getPortfolioBySlug(slug: string) {
-  try {
-    const docRef = doc(db, 'portfolios', slug)
-    const docSnap = await getDoc(docRef)
-    
-    if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() }
-    }
-    return null
-  } catch (error) {
-    console.error('Error fetching portfolio:', error)
-    throw error
-  }
-}

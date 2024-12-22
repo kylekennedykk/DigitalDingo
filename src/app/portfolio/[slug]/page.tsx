@@ -1,47 +1,157 @@
-'use client'
+import { notFound } from 'next/navigation'
+import { getFirestore } from 'firebase-admin/firestore'
+import app from '@/lib/firebase/admin'
+import { themes } from '@/lib/themes'
+import type { PortfolioSite, Section } from '@/types/portfolio'
+import HeroSection from '@/components/sections/Hero'
+import ContentSection from '@/components/sections/Content'
+import GallerySection from '@/components/sections/Gallery'
+import MenuSection from '@/components/sections/Menu'
+import TestimonialsSection from '@/components/sections/Testimonials'
+import TeamSection from '@/components/sections/Team'
+import HoursSection from '@/components/sections/Hours'
+import LocationSection from '@/components/sections/Location'
+import FaqSection from '@/components/sections/Faq'
 
-import { useExternalPortfolioItems } from '@/lib/hooks/useExternalPortfolioItems'
-import Image from 'next/image'
-import type { ExternalPortfolioItem } from '@/types/portfolio'
+// Generate static params for all published sites
+export async function generateStaticParams() {
+  const db = getFirestore(app)
+  const sitesSnapshot = await db
+    .collection('portfolio-sites')
+    .where('status', '==', 'published')
+    .get()
 
-interface PageProps {
-  params: {
-    slug: string
-  }
+  return sitesSnapshot.docs.map(doc => ({
+    slug: doc.data().slug
+  }))
 }
 
-export default function PortfolioItemPage({ params }: PageProps) {
-  const { data: sites = [], isLoading } = useExternalPortfolioItems()
-  const site = sites.find(s => s.id === params.slug)
+async function getSite(slug: string): Promise<PortfolioSite | null> {
+  const db = getFirestore(app)
+  
+  // Get the site document
+  const siteSnapshot = await db
+    .collection('portfolio-sites')
+    .where('slug', '==', slug)
+    .where('status', '==', 'published')
+    .limit(1)
+    .get()
 
-  if (isLoading) return <div>Loading...</div>
-  if (!site) return <div>Site not found</div>
+  if (siteSnapshot.empty) return null
+
+  const siteDoc = siteSnapshot.docs[0]
+  const siteData = siteDoc.data()
+
+  // Get the site's sections
+  const sectionsSnapshot = await db
+    .collection('portfolio-sites')
+    .doc(siteDoc.id)
+    .collection('sections')
+    .orderBy('order')
+    .get()
+
+  const sections = sectionsSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  })) as Section[]
+
+  return {
+    id: siteDoc.id,
+    ...siteData,
+    sections
+  } as PortfolioSite
+}
+
+export default async function PortfolioSitePage({
+  params
+}: {
+  params: { slug: string }
+}) {
+  const site = await getSite(params.slug)
+  
+  if (!site) {
+    notFound()
+  }
+
+  const theme = themes[site.theme || 'default']
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4">{site.name}</h1>
-        {site.thumbnail && (
-          <div className="relative aspect-video mb-6">
-            <Image
-              src={site.thumbnail}
-              alt={site.name}
-              fill
-              className="object-cover rounded-lg"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          </div>
-        )}
-        <p className="text-lg mb-6">{site.description}</p>
-        <a
-          href={site.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          Visit Site
-        </a>
-      </div>
+    <div style={{ 
+      backgroundColor: theme.colors.background,
+      color: theme.colors.text,
+      fontFamily: theme.fonts.body
+    }}>
+      <style jsx global>{`
+        .font-heading {
+          font-family: ${theme.fonts.heading}, system-ui;
+        }
+        .text-primary {
+          color: ${theme.colors.primary};
+        }
+        .bg-primary {
+          background-color: ${theme.colors.primary};
+        }
+        .text-secondary {
+          color: ${theme.colors.secondary};
+        }
+        .bg-secondary {
+          background-color: ${theme.colors.secondary};
+        }
+        .text-accent {
+          color: ${theme.colors.accent};
+        }
+        .bg-accent {
+          background-color: ${theme.colors.accent};
+        }
+      `}</style>
+
+      {site.sections.map((section) => {
+        switch (section.type) {
+          case 'hero':
+            return <HeroSection key={section.id} content={section.content} settings={section.settings} />
+          case 'content':
+            return <ContentSection key={section.id} content={section.content} settings={section.settings} />
+          case 'gallery':
+            return <GallerySection key={section.id} content={section.content} settings={section.settings} />
+          case 'menu':
+            return <MenuSection key={section.id} content={section.content} settings={section.settings} />
+          case 'testimonials':
+            return <TestimonialsSection key={section.id} content={section.content} settings={section.settings} />
+          case 'team':
+            return <TeamSection key={section.id} content={section.content} settings={section.settings} />
+          case 'hours':
+            return <HoursSection key={section.id} content={section.content} settings={section.settings} />
+          case 'location':
+            return <LocationSection key={section.id} content={section.content} settings={section.settings} />
+          case 'faq':
+            return <FaqSection key={section.id} content={section.content} settings={section.settings} />
+          default:
+            return null
+        }
+      })}
     </div>
   )
+}
+
+// Add metadata generation
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const site = await getSite(params.slug)
+  
+  if (!site) {
+    return {
+      title: 'Site Not Found | DigitalDingo Portfolio',
+      description: 'The requested portfolio site could not be found.'
+    }
+  }
+
+  return {
+    title: `${site.name} | DigitalDingo Portfolio`,
+    description: site.description || `A portfolio site created by DigitalDingo`,
+    openGraph: {
+      title: site.name,
+      description: site.description,
+      images: site.thumbnail ? [site.thumbnail] : [],
+      type: 'website',
+    },
+  }
 } 

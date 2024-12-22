@@ -6,7 +6,6 @@ import { db, storage } from '@/lib/firebase'
 import { collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
 
 interface AboutContent {
   mainText: string
@@ -312,12 +311,10 @@ export default function AboutContent() {
                 </div>
                 <p className="mt-2 text-gray-600 whitespace-pre-wrap">{member.bio}</p>
                 {member.imageUrl && (
-                  <Image 
+                  <img 
                     src={member.imageUrl} 
                     alt={member.name}
                     className="mt-4 w-24 h-24 object-cover rounded-full" 
-                    width={96}
-                    height={96}
                   />
                 )}
               </div>
@@ -391,12 +388,10 @@ Third paragraph goes here."
                     />
                   </label>
                   {(imagePreview || editingMember.imageUrl) && (
-                    <Image 
-                      src={imagePreview || editingMember.imageUrl || '/placeholder-image.jpg'}
+                    <img 
+                      src={imagePreview || editingMember.imageUrl}
                       alt="Preview"
                       className="w-32 h-32 object-cover"
-                      width={128}
-                      height={128}
                     />
                   )}
                 </div>

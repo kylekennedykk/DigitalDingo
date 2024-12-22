@@ -5,41 +5,62 @@ import {
   orderBy, 
   limit, 
   getDocs,
-  type CollectionReference,
-  type Query,
-  type QuerySnapshot,
-  type DocumentData
+  doc,
+  getDoc,
+  updateDoc,
+  type QueryConstraint
 } from 'firebase/firestore'
 import { db } from './firebase'
+import type { PortfolioSite, ExternalPortfolioItem } from '@/types/portfolio'
 
-export async function getLatestPortfolioItems(count = 6) {
-  const portfolioRef = collection(db, 'portfolio') as CollectionReference<DocumentData>
-  const q = query(
-    portfolioRef,
-    where('published', '==', true),
-    orderBy('createdAt', 'desc'),
-    limit(count)
-  )
+export const getPortfolioItems = async (options: {
+  limit?: number
+  published?: boolean
+  featured?: boolean
+} = {}) => {
+  const constraints: QueryConstraint[] = []
   
+  if (typeof options.published === 'boolean') {
+    constraints.push(where('published', '==', options.published))
+  }
+  
+  if (typeof options.featured === 'boolean') {
+    constraints.push(where('featured', '==', options.featured))
+  }
+  
+  constraints.push(orderBy('createdAt', 'desc'))
+  
+  if (options.limit) {
+    constraints.push(limit(options.limit))
+  }
+
+  const q = query(collection(db, 'portfolio'), ...constraints)
   const snapshot = await getDocs(q)
+  
   return snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
-  }))
+  })) as ExternalPortfolioItem[]
 }
 
-export async function getFeaturedPortfolioItems(count = 3) {
-  const portfolioRef = collection(db, 'portfolio') as CollectionReference<DocumentData>
-  const q = query(
-    portfolioRef,
-    where('published', '==', true),
-    where('featured', '==', true),
-    limit(count)
-  )
+export const getPortfolioSite = async (id: string) => {
+  const docRef = doc(db, 'portfolio-sites', id)
+  const snapshot = await getDoc(docRef)
   
-  const snapshot = await getDocs(q)
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }))
+  if (!snapshot.exists()) {
+    throw new Error('Site not found')
+  }
+  
+  return {
+    id: snapshot.id,
+    ...snapshot.data()
+  } as PortfolioSite
+}
+
+export const updatePortfolioSite = async (id: string, data: Partial<PortfolioSite>) => {
+  const docRef = doc(db, 'portfolio-sites', id)
+  await updateDoc(docRef, {
+    ...data,
+    updatedAt: new Date().toISOString()
+  })
 } 

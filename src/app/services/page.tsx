@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import PageWithFlow from '@/components/layout/PageWithFlow';
+import { PageWithFlow } from '@/components/layout/PageWithFlow';
 import Link from 'next/link';
 import { 
   Globe2, 
@@ -13,7 +13,6 @@ import {
   Cpu,
   ArrowRight
 } from 'lucide-react';
-import Image from 'next/image';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -125,10 +124,10 @@ export default function ServicesPage() {
                 <div className="max-w-4xl mx-auto">
                   <div className="pt-12">
                     <p className="text-base md:text-lg mb-6 text-black">
-                      We provide a full suite of digital solutions thoughtfully crafted to fit your unique needs. From visually engaging web design and intuitive user experiences, to strategic marketing and rock-solid development, we&apos;re committed to helping your business stand out in an ever-evolving online world.
+                      We provide a full suite of digital solutions thoughtfully crafted to fit your unique needs. From visually engaging web design and intuitive user experiences, to strategic marketing and rock-solid development, we're committed to helping your business stand out in an ever-evolving online world.
                     </p>
                     <p className="text-base md:text-lg text-black">
-                      Our approach is simple: we listen, collaborate, and deliver solutions designed to move your business forward. Whether you&apos;re launching a new venture or looking to optimize your current digital presence, we&apos;re here to guide you every step of the way—ensuring your brand not only thrives, but leads the pack.
+                      Our approach is simple: we listen, collaborate, and deliver solutions designed to move your business forward. Whether you're launching a new venture or looking to optimize your current digital presence, we're here to guide you every step of the way—ensuring your brand not only thrives, but leads the pack.
                     </p>
                   </div>
                 </div>
@@ -203,7 +202,8 @@ export default function ServicesPage() {
                 Ready to Transform Your Digital Presence?
               </h2>
               <p className="text-xl mb-12 text-neutral-300">
-                Let&apos;s create something extraordinary together. Contact us today to discuss your project and discover how we can help bring your vision to life.
+                Let's create something extraordinary together. Contact us today to discuss
+                your project and discover how we can help bring your vision to life.
               </p>
               <Link
                 href="/contact"

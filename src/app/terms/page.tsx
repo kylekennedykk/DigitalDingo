@@ -21,7 +21,7 @@ export default function TermsPage() {
 
             <h2>1. Agreement to Terms</h2>
             <p>
-              By accessing and using Digital Dingo&apos;s website and services, you agree to be bound by these Terms of Service. 
+              By accessing and using Digital Dingo's website and services, you agree to be bound by these Terms of Service. 
               If you disagree with any part of these terms, you may not access our services.
             </p>
 

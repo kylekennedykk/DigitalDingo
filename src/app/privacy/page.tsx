@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
           <section className="mb-12">
             <h2 className="text-2xl font-heading mb-4">Introduction</h2>
             <p>
-              DigitalDingo (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) respects your privacy and is committed to protecting your personal data. 
+              DigitalDingo ("we," "our," or "us") respects your privacy and is committed to protecting your personal data. 
               This privacy policy explains how we collect, use, and protect your personal information when you use our website 
               (digitaldingo.uk) and services.
             </p>
@@ -85,7 +85,7 @@ export default function PrivacyPolicy() {
             <h2 className="text-2xl font-heading mb-4">Changes to This Policy</h2>
             <p>
               We may update this privacy policy from time to time. We will notify you of any changes by posting the new 
-              privacy policy on this page and updating the &quot;Last updated&quot; date.
+              privacy policy on this page and updating the "Last updated" date.
             </p>
           </section>
         </div>

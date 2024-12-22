@@ -24,4 +24,13 @@ export interface Contact {
   status: 'new' | 'in-progress' | 'completed'
   timestamp?: Date | string
   metadata?: ContactMetadata
+  notes?: Array<{
+    id: string
+    content: string
+    timestamp: string
+    author?: {
+      name?: string
+      email: string
+    }
+  }>
 } 

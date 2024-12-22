@@ -29,7 +29,7 @@ export default function ContactPage() {
                 Get in Touch
               </h1>
               <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-                Have a project in mind? We&apos;d love to hear about it. Send us a message and we&apos;ll get back to you as soon as possible.
+                Have a project in mind? We'd love to hear about it. Send us a message and we'll get back to you as soon as possible.
               </p>
             </motion.div>
 
@@ -97,11 +97,11 @@ export default function ContactPage() {
             className="mt-24 text-center max-w-3xl mx-auto"
           >
             <h2 className="font-heading text-3xl mb-6 text-white">
-              Let&apos;s Create Something Amazing
+              Let's Create Something Amazing
             </h2>
             <p className="text-neutral-300 mb-8">
-              Whether you&apos;re starting from scratch or looking to revamp your existing digital presence, 
-              we&apos;re here to help turn your vision into reality. Get in touch and let&apos;s start the conversation.
+              Whether you're starting from scratch or looking to revamp your existing digital presence, 
+              we're here to help turn your vision into reality. Get in touch and let's start the conversation.
             </p>
           </motion.div>
         </div>

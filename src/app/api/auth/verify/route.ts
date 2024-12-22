@@ -1,21 +1,24 @@
+import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { getAuth } from 'firebase-admin/auth'
-import { adminApp } from '@/lib/firebase/admin'
+import { adminAuth } from '@/lib/firebase/admin'
 
 export async function GET() {
   try {
-    const cookieStore = await cookies()
-    const session = cookieStore.get('session')?.value
+    const session = cookies().get('session')?.value
 
     if (!session) {
-      return new Response('Unauthorized', { status: 401 })
+      return NextResponse.json({ error: 'No session' }, { status: 401 })
     }
 
-    const decodedClaims = await getAuth(adminApp).verifySessionCookie(session, true)
-    return new Response(JSON.stringify(decodedClaims), {
-      headers: { 'Content-Type': 'application/json' },
-    })
+    const decodedClaims = await getAuth(adminAuth).verifySessionCookie(session, true)
+
+    if (!decodedClaims.admin) {
+      return NextResponse.json({ error: 'Not admin' }, { status: 403 })
+    }
+
+    return NextResponse.json({ status: 'valid' })
   } catch (error) {
-    return new Response('Unauthorized', { status: 401 })
+    return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
   }
 } 
